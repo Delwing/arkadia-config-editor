@@ -14,7 +14,7 @@ jobs:
       
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -24,8 +24,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: Install Snap
-        run: sudo snap install snapcraft --classic
+
+      - if: matrix.os == 'ubuntu-latest'
+        - name: Install Snap
+          run: sudo snap install snapcraft --classic
 
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
