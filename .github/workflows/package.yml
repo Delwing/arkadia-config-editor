@@ -25,7 +25,7 @@ jobs:
           node-version: 12
 
       - name: Build Dist
-        run: yarn dist
+        run: yarn install && yarn dist
 
       - name: Upload files
         uses: AButler/upload-release-assets@v2.0
