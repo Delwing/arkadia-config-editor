@@ -28,7 +28,7 @@ jobs:
         run: yarn dist
 
       - name: Upload files
-        uses:  - uses: AButler/upload-release-assets@v2.0
+        uses: AButler/upload-release-assets@v2.0
         with:
           files: 'dist/*.ext;dist/*.AppImage;dist/*.dmg'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
