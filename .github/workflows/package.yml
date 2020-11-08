@@ -30,5 +30,5 @@ jobs:
       - name: Upload files
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: 'dist/*.ext;dist/*.AppImage;dist/*.dmg'
+          files: 'dist/*.exe;dist/*.AppImage;dist/*.dmg'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
