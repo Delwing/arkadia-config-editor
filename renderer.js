@@ -3,6 +3,7 @@ const FindInPage = require('electron-find')
 const { ConfigLoader } = require('./config')
 var dialog = remote.require('electron').dialog;
 
+let config = new ConfigLoader()
 
 let findInPage = new FindInPage.FindInPage(
     remote.getCurrentWebContents(), {
@@ -15,13 +16,13 @@ ipcRenderer.on('on-find', (e, args) => {
 })
 
 function openFile() {
-    dialog.showOpenDialog().then(result => new ConfigLoader(result.filePaths[0]).load());
+    dialog.showOpenDialog().then(result => config.load(result.filePaths[0]));
 }
 
 ipcRenderer.send('variable-request');
 ipcRenderer.on('variable-reply', function (event, ...args) {
     if(args[0] && args[1]) {
-        new ConfigLoader(`${args[0]}/${args[1]}`).load()
+        config.load(`${args[0]}/${args[1]}.json`).load()
     } else {
         openFile()        
     }

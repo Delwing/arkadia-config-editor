@@ -1,5 +1,5 @@
 {
-  "name": "electron-quick-start",
+  "name": "arkadia-config-editor",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
@@ -9,13 +9,6 @@
     "dist": "electron-builder"
   },
   "repository": "https://github.com/Delwing/arkadia-config-editor",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
   "author": "Dargoth",
   "devDependencies": {
     "electron": "^10.1.5",

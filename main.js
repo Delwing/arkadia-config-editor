@@ -18,6 +18,7 @@ function createWindow() {
     },
     autoHideMenuBar: true
   })
+  
 
   mainWindow.loadFile('index.html')
 
