@@ -26,7 +26,6 @@ jobs:
           node-version: 12
 
       - if: matrix.os == 'ubuntu-latest'
-        - name: Install Snap
           run: sudo snap install snapcraft --classic
 
       - name: Build/release Electron app
