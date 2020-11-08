@@ -1,0 +1,135 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'BlinkMacSystemFont', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
+    height: 100%;
+}
+
+h1 {
+    font-size: 1.25rem;
+    padding-top: 14px;
+    margin: 0 10px;
+    text-align: center;
+}
+
+.header-area {
+    display: flex;
+    border-bottom: 1px solid #cfcfcf;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 20px;;
+}
+
+.header-area img {
+    height: 70px;
+}
+
+h3 {
+    font-size: 1.0rem;
+}
+
+h3.card-title {
+    font-size: 1.3rem;
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+body {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+}
+
+.sidebar {
+    background: #e9e9e9;
+    width: 25%;
+    min-width: 200px;
+    border-right: 1px solid #cfcfcf;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.body-pane {
+    background: #ffffff;
+    display: inline-block;
+    width: 75%;
+    overflow-y: scroll;
+    max-height: 100%;
+    position: relative;
+}
+
+.spinner {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    border: none;
+}
+
+.top-bar {
+    position: fixed;
+    top: 0;
+    width: 70%;
+    text-align: right;
+    margin: 20px;
+    z-index: 99;
+}
+
+#entries-index {
+    font-size: 0.75rem;
+    list-style-type: none;
+}
+
+#entries-index li {
+    cursor: pointer;
+}
+
+#entries-index li:hover {
+    opacity: 0.5;
+}
+
+.filter-entries-group {
+    margin: 10px 35px;
+}
+
+
+.toast-center {
+    position: fixed;
+    z-index: 55;
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+    left: 30%;
+    display: none;
+    opacity: 0;
+    top: 20px;
+}
+
+.toast {
+    opacity: 1 !important;
+}
+
+.toast-center.visible {
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 3s;
+    animation: fadein 0.5s, fadeout 0.5s 3s;
+    opacity: 1;
+    display: flex;
+}
+
+@keyframes fadein {
+    from { opacity: 0; top: -30px; }
+    to { opacity: 1; top: 20; }
+  }
+
+  @keyframes fadeout {
+    from { opacity: 1; top: 0 }
+    to { opacity: 20; top: -30px; }
+  }
