@@ -23,6 +23,17 @@
     "showdown": "^1.9.1"
   },
   "build": {
-    "appId": "arkadia-cfg-editor"
+    "appId": "arkadia-cfg-editor",
+    "productName": "arkadia-cfg-editor",
+    "artifactName": "${productName}.${ext}",
+    "linux": {
+      "target" : "AppImage"
+    },
+    "win": {
+      "target" : "portable"
+    },
+    "mac": {
+      "target" : "dmg"
+    }
   }
 }
