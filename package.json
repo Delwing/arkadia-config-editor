@@ -4,7 +4,9 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -14,10 +16,10 @@
     "tutorial",
     "demo"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Dargoth",
   "devDependencies": {
-    "electron": "^10.1.5"
+    "electron": "^10.1.5",
+    "electron-builder": "^22.9.1"
   },
   "dependencies": {
     "@json-editor/json-editor": "^2.5.1",
@@ -26,5 +28,8 @@
     "electron-reload": "^1.5.0",
     "highlightjs": "^9.16.2",
     "showdown": "^1.9.1"
+  },
+  "build": {
+    "appId": "arkadia-cfg-editor"
   }
 }
