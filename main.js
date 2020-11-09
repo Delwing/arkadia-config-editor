@@ -1,11 +1,13 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron')
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu } = require('electron')
 const path = require('path')
+const settings = require('electron-settings')
 
 
 // require('electron-reload')(__dirname, {
 //   electron: require(`${__dirname}/node_modules/electron`)
 // })
+
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -16,22 +18,93 @@ function createWindow() {
       nodeIntegration: true,
       enableRemoteModule: true
     },
-    autoHideMenuBar: true
+    autoHideMenuBar: false
   })
-  
+
+  function setSetting(key, value) {
+    settings.setSync(key, value)
+    mainWindow.webContents.send('option')
+  }
+
 
   mainWindow.loadFile('index.html')
 
-  mainWindow.on('focus', () => {
-    globalShortcut.register('CommandOrControl+F', function () {
-      if (mainWindow && mainWindow.webContents) {
-        mainWindow.webContents.send('on-find', '')
-      }
-    })
-  })
-  mainWindow.on('blur', () => {
-    globalShortcut.unregister('CommandOrControl+F')
-  })
+  const template = [
+    {
+      label: 'Plik',
+      submenu: [
+        {
+          label: "Zapisz",
+          click: function () { mainWindow.webContents.send('save') },
+          accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S',
+        },
+        {
+          label: "Otwórz",
+          click: function () { mainWindow.webContents.send('open') },
+          accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O',
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: "Wyjście",
+          role: "quit"
+        }
+      ]
+    },
+    {
+      label: "Edycja",
+      submenu: [
+        {
+          label: "Szukaj",
+          accelerator: process.platform === 'darwin' ? 'Cmd+F' : 'Ctrl+F',
+          click: function () { mainWindow.webContents.send('on-find') }
+        }
+      ]
+    },
+    {
+      label: "Opcje",
+      submenu: [
+        {
+          label: "Wizualna edycja map i list",
+          type: "checkbox",
+          click: function(item) { setSetting('visual-edit', item.checked)},
+          checked: settings.getSync('visual-edit')
+        }
+      ]
+    },
+    {
+      label: "Widok",
+      submenu: [
+        { 
+          label: "Zbliż",
+          role: 'zoomin',
+          accelerator: process.platform === 'darwin' ? 'Cmd+=' : 'Ctrl+=',
+        },
+        { 
+          label: "Oddal",
+          role: 'zoomout',
+          accelerator: process.platform === 'darwin' ? 'Cmd+-' : 'Ctrl+-',
+        },
+        { type: 'separator' },
+        { 
+          label: "Pełny ekran",
+          role: 'togglefullscreen' 
+        }
+      ]
+    },
+    {
+      label: "Pomoc",
+      submenu: [
+        {
+          label: "Otwórz narzędzia developerskie",
+          role: "toggledevtools"
+        }
+      ]
+    }
+  ]
+
+  mainWindow.setMenu(Menu.buildFromTemplate(template))
 
 }
 

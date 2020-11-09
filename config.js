@@ -4,11 +4,13 @@ const fs = require("fs");
 const showdown = require("showdown");
 const hljs = require("highlightjs");
 const path = require("path");
+const settings = require('electron-settings');
 
 const converter = new showdown.Converter();
 const editorHolder = document.getElementById("editor-holder");
 const spinner = document.querySelector(".spinner")
 const entriesIndex = document.getElementById("entries-index")
+const toast = document.querySelector(".toast-center");
 
 const readmeSuffix = "arkadia/config.md";
 const schemaSuffix = "arkadia/config_schema.json";
@@ -21,17 +23,16 @@ class ConfigLoader {
       .querySelector(".save-button")
       .addEventListener("click", function (e) {
         this.save();
-        let toast = document.querySelector(".toast-center");
-        toast.className += " visible";
-        setTimeout(function () {
-          toast.className = toast.className.replace("visible", "").trim();
-        }, 3500);
       }.bind(this));
+
+    ipcRenderer.on('save', function () { this.save() }.bind(this))
+    ipcRenderer.on('option', function (e, args) { this.reload() }.bind(this))
   }
 
   load(configPath) {
+    this.configPath
     spinner.style.display = 'flex'
-    new Promise(function(resolve, err) { this.doLoad(configPath) }.bind(this)).then(() => spinner.style.display = 'none' )
+    new Promise(function (resolve, err) { this.doLoad(configPath) }.bind(this)).then(() => spinner.style.display = 'none')
   }
 
   async doLoad(configPath) {
@@ -64,6 +65,7 @@ class ConfigLoader {
 
       this.schema = {
         title: config["scripts.character_name"] || "{unknown name}",
+        description: this.configPath,
         type: "object",
         properties: {},
         default: "",
@@ -112,8 +114,9 @@ class ConfigLoader {
         disable_edit_json: true,
         disable_properties: true,
         disable_array_delete_last_row: true,
+        disable_array_delete_all_rows: true,
         prompt_before_delete: false,
-        object_layout: "table",
+        object_layout: "normal"        
       });
 
       editor.setValue(config);
@@ -125,9 +128,8 @@ class ConfigLoader {
             '[data-schemapath="root.' + key + '"]'
           );
           if (selector !== null) {
-            selector.querySelector("small").innerHTML = converter.makeHtml(
-              element
-            );
+              let small = selector.querySelector("small, h3 ~ p")
+              small.innerHTML = converter.makeHtml(element);
           } else {
             console.debug("No selector: " + key);
           }
@@ -148,13 +150,22 @@ class ConfigLoader {
     for (const key in value) {
       if (value.hasOwnProperty(key)) {
         const element = value[key];
-        if (this.schema.properties[key]?.transformer) {
+        if (this.schema.properties[key]?.transformer && this.schema.properties[key]?.type == "string") {
           value[key] = this.schema.properties[key].transformer(element);
         }
       }
     }
     fs.writeFileSync(this.configPath, JSON.stringify(value, null, 4));
     ipcRenderer.send("config-saved", this.configPath)
+
+    toast.className += " visible";
+    setTimeout(function () {
+      toast.className = toast.className.replace("visible", "").trim();
+    }, 3500);
+  }
+
+  reload() {
+    this.load(this.configPath)
   }
 
   destroy() {
@@ -194,9 +205,9 @@ class ConfigLoader {
   mapFieldType(type) {
     switch (type) {
       case "map":
-        return "string";
+        return settings.getSync('visual-edit') ? "object" : "string";
       case "list":
-        return "string";
+        return settings.getSync('visual-edit') ? "array" : "string";
       default:
         return type;
     }
