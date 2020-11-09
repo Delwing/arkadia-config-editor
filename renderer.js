@@ -21,8 +21,9 @@ function openFile() {
 
 ipcRenderer.send('variable-request');
 ipcRenderer.on('variable-reply', function (event, ...args) {
+    console.log(args)
     if(args[0] && args[1]) {
-        config.load(`${args[0]}/${args[1]}.json`).load()
+        config.load(`${args[0]}/${args[1]}.json`)
     } else {
         openFile()        
     }
