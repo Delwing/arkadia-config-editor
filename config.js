@@ -82,6 +82,7 @@ class ConfigLoader {
         };
 
         if (["list", "map"].includes(element.field_type)) {
+          this.schema.properties[element.name].format = "textarea"
           this.schema.properties[element.name].transformer = JSON.parse;
         }
 
@@ -116,7 +117,7 @@ class ConfigLoader {
         disable_array_delete_last_row: true,
         disable_array_delete_all_rows: true,
         prompt_before_delete: false,
-        object_layout: "normal"        
+        object_layout: "normal"
       });
 
       editor.setValue(config);
@@ -128,8 +129,8 @@ class ConfigLoader {
             '[data-schemapath="root.' + key + '"]'
           );
           if (selector !== null) {
-              let small = selector.querySelector("small, h3 ~ p")
-              small.innerHTML = converter.makeHtml(element);
+            let small = selector.querySelector("small, h3 ~ p")
+            small.innerHTML = converter.makeHtml(element);
           } else {
             console.debug("No selector: " + key);
           }
@@ -140,7 +141,33 @@ class ConfigLoader {
         hljs.highlightBlock(block);
       });
 
-
+      document.querySelectorAll("textarea").forEach(textarea => {
+        try {
+          let obj = JSON.parse(textarea.value)
+          textarea.value = JSON.stringify(obj, null, 4)
+          textarea.style.height = ""
+          textarea.style.height = textarea.scrollHeight + "px";
+        } catch (error) {
+          console.error(textarea.value)
+          console.error(error)
+        }
+        textarea.addEventListener("input", function (event) {
+          event.target.style.height = ""
+          event.target.style.height = event.target.scrollHeight + "px";
+        })
+        textarea.addEventListener("keydown", function (e) {
+          console.log(e)
+          if (e.code === "Tab") {
+            let tab = "    "
+            let startPos = e.target.selectionStart;
+            let endPos = e.target.selectionEnd;
+            e.target.value = e.target.value.substring(0, startPos) + tab + e.target.value.substring(endPos, e.target.value.length);
+            e.target.selectionStart = startPos + tab.length;
+            e.target.selectionEnd = startPos + tab.length;
+            e.preventDefault()
+          }
+        })
+      })
     })
   }
 
@@ -196,6 +223,12 @@ class ConfigLoader {
         currentDoc = [];
       } else {
         currentDoc.push(currentLine);
+      }
+
+      if (line == lines.length - 1) {
+        currentElements.forEach((element) => {
+          result[element] = currentDoc.join("\n");
+        });
       }
     }
 

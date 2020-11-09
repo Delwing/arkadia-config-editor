@@ -125,6 +125,10 @@ h3.card-title ~ p {
     margin: 10px 35px;
 }
 
+textarea {
+    overflow: hidden;
+}
+
 
 .toast-center {
     position: fixed;
@@ -152,9 +156,9 @@ h3.card-title ~ p {
 @keyframes fadein {
     from { opacity: 0; top: -30px; }
     to { opacity: 1; top: 20; }
-  }
+ }
 
-  @keyframes fadeout {
+@keyframes fadeout {
     from { opacity: 1; top: 0 }
     to { opacity: 20; top: -30px; }
-  }
+}
