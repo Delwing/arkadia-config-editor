@@ -102,7 +102,7 @@ h3.card-title ~ p {
 .top-bar {
     position: fixed;
     top: 0;
-    width: 70%;
+    right: 20px;
     text-align: right;
     margin: 20px;
     z-index: 99;

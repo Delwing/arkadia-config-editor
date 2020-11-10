@@ -15,6 +15,9 @@ const toast = document.querySelector(".toast-center");
 const readmeSuffix = "arkadia/config.md";
 const schemaSuffix = "arkadia/config_schema.json";
 
+const { mudlet_colors } = require('./mudlet_colors.js')
+require("./json_editor_cfg.js")
+
 let editor;
 
 class ConfigLoader {
@@ -86,6 +89,12 @@ class ConfigLoader {
           this.schema.properties[element.name].transformer = JSON.parse;
         }
 
+
+        if (element.content_type == "mudlet_color") {
+          this.schema.properties[element.name].enum = mudlet_colors;
+          this.schema.properties[element.name].format = "choices"
+        }
+
         keys.add(element.name);
       });
 
@@ -113,7 +122,7 @@ class ConfigLoader {
         theme: "bootstrap4",
         disable_collapse: true,
         disable_edit_json: true,
-        disable_properties: true,
+        disable_properties: false,
         disable_array_delete_last_row: true,
         disable_array_delete_all_rows: true,
         prompt_before_delete: false,
@@ -168,6 +177,7 @@ class ConfigLoader {
           }
         })
       })
+
     })
   }
 
