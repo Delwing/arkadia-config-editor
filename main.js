@@ -1,3 +1,5 @@
+process.env.ELECTRON_NO_ATTACH_CONSOLE = true;
+
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu } = require('electron')
 const path = require('path')
@@ -25,7 +27,6 @@ function createWindow() {
     settings.setSync(key, value)
     mainWindow.webContents.send('option')
   }
-
 
   mainWindow.loadFile('index.html')
 
@@ -123,3 +124,8 @@ app.on('window-all-closed', function () {
 ipcMain.on('variable-request', function (event, arg) {
   event.sender.send('variable-reply', process.argv[2], process.argv[3]);
 });
+
+ipcMain.on('config-saved', function(event, path) {
+  process.stdout.write(`SAVED ${path}`)
+  
+})

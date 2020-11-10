@@ -82,13 +82,13 @@ class ConfigLoader {
         this.schema.properties[element.name] = {
           type: type,
           description: description,
+          format: element.content_type
         };
 
         if (["list", "map"].includes(element.field_type)) {
           this.schema.properties[element.name].format = "textarea"
           this.schema.properties[element.name].transformer = JSON.parse;
         }
-
 
         if (element.content_type == "mudlet_color") {
           this.schema.properties[element.name].enum = mudlet_colors;
