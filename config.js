@@ -151,21 +151,23 @@ class ConfigLoader {
       });
 
       document.querySelectorAll("textarea").forEach(textarea => {
-        try {
-          let obj = JSON.parse(textarea.value)
-          textarea.value = JSON.stringify(obj, null, 4)
-          textarea.style.height = ""
-          textarea.style.height = textarea.scrollHeight + "px";
-        } catch (error) {
-          console.error(textarea.value)
-          console.error(error)
+        if (textarea.value) {
+          try {
+            let obj = JSON.parse(textarea.value)
+            textarea.value = JSON.stringify(obj, null, 4)
+            textarea.style.height = ""
+            textarea.style.height = textarea.scrollHeight + "px";
+          } catch (error) {
+            console.error(textarea)
+            console.error(textarea.value)
+            console.error(error)
+          }
         }
         textarea.addEventListener("input", function (event) {
           event.target.style.height = ""
           event.target.style.height = event.target.scrollHeight + "px";
         })
         textarea.addEventListener("keydown", function (e) {
-          console.log(e)
           if (e.code === "Tab") {
             let tab = "    "
             let startPos = e.target.selectionStart;
@@ -184,6 +186,16 @@ class ConfigLoader {
   save() {
     let value = {};
     Object.assign(value, editor.getValue());
+    let validationErrors = editor.validate(value)
+    if(validationErrors.length > 0) {
+      let key = validationErrors[0]
+      console.log(key)
+      let elmnt = document.body.querySelector(
+        '[data-schemapath="' + key.path + '"]'
+      );
+      elmnt.scrollIntoView()
+      return
+    }
     for (const key in value) {
       if (value.hasOwnProperty(key)) {
         const element = value[key];

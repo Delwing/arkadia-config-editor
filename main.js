@@ -1,15 +1,8 @@
 process.env.ELECTRON_NO_ATTACH_CONSOLE = true;
 
-// Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, globalShortcut, Menu } = require('electron')
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, shell } = require('electron')
 const path = require('path')
 const settings = require('electron-settings')
-
-
-// require('electron-reload')(__dirname, {
-//   electron: require(`${__dirname}/node_modules/electron`)
-// })
-
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -18,15 +11,21 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      enableRemoteModule: true
-    },
-    autoHideMenuBar: false
+      enableRemoteModule: true,
+      spellcheck: false
+    }
   })
 
   function setSetting(key, value) {
     settings.setSync(key, value)
     mainWindow.webContents.send('option')
   }
+
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    event.preventDefault()
+    shell.openExternal(url)
+  })
 
   mainWindow.loadFile('index.html')
 
@@ -69,7 +68,7 @@ function createWindow() {
         {
           label: "Wizualna edycja map i list",
           type: "checkbox",
-          click: function(item) { setSetting('visual-edit', item.checked)},
+          click: function (item) { setSetting('visual-edit', item.checked) },
           checked: settings.getSync('visual-edit')
         }
       ]
@@ -77,20 +76,20 @@ function createWindow() {
     {
       label: "Widok",
       submenu: [
-        { 
+        {
           label: "Zbliż",
           role: 'zoomin',
           accelerator: process.platform === 'darwin' ? 'Cmd+=' : 'Ctrl+=',
         },
-        { 
+        {
           label: "Oddal",
           role: 'zoomout',
           accelerator: process.platform === 'darwin' ? 'Cmd+-' : 'Ctrl+-',
         },
         { type: 'separator' },
-        { 
+        {
           label: "Pełny ekran",
-          role: 'togglefullscreen' 
+          role: 'togglefullscreen'
         }
       ]
     },
@@ -106,7 +105,6 @@ function createWindow() {
   ]
 
   mainWindow.setMenu(Menu.buildFromTemplate(template))
-
 }
 
 app.whenReady().then(() => {
@@ -125,7 +123,6 @@ ipcMain.on('variable-request', function (event, arg) {
   event.sender.send('variable-reply', process.argv[2], process.argv[3]);
 });
 
-ipcMain.on('config-saved', function(event, path) {
+ipcMain.on('config-saved', function (event, path) {
   process.stdout.write(`SAVED ${path}`)
-  
 })
