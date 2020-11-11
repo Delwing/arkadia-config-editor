@@ -1,3 +1,5 @@
+const settings = require('electron-settings');
+
 JSONEditor.defaults.languages.pl = {
 	button_object_properties: "Pola obiektu"
 };
@@ -29,7 +31,7 @@ JSONEditor.defaults.resolvers.unshift(function (schema) {
 
 JSONEditor.defaults.custom_validators.push((schema, value, path) => {
 	const errors = [];
-	if (schema.format === "textarea") {
+	if (schema.format === "textarea" && !settings.getSync('visual-edit')) {
 		try {
 			JSON.parse(value)
 		} catch(e) {
