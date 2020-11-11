@@ -189,7 +189,6 @@ class ConfigLoader {
     let validationErrors = editor.validate(value)
     if(validationErrors.length > 0) {
       let key = validationErrors[0]
-      console.log(key)
       let elmnt = document.body.querySelector(
         '[data-schemapath="' + key.path + '"]'
       );
