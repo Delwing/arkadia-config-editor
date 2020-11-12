@@ -166,3 +166,33 @@ textarea {
 .input-button {
     margin: 7px 7px 7px 2px;
 }
+
+@media (prefers-color-scheme: dark) {
+    .bg-light, .body-pane, .card .row {
+        background: #353535 !important;
+    }
+
+    .hljs, .sidebar {
+        background: #252525;
+    }
+
+    #entries-index, h1, h3, label, li, p {
+        color: #eee;
+    }
+
+    .form-control, .form-control:focus {
+        background-color: #555;
+        color: #eee;
+    }
+
+    img {
+        filter: invert(0.5);
+    }
+
+    ::-webkit-scrollbar {
+        background: #000;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #aaa;
+    }
+}
