@@ -1,6 +1,6 @@
 process.env.ELECTRON_NO_ATTACH_CONSOLE = true;
 
-const { app, BrowserWindow, ipcMain, globalShortcut, Menu, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, shell, nativeTheme } = require('electron')
 const path = require('path')
 const settings = require('electron-settings')
 
@@ -70,6 +70,26 @@ function createWindow() {
           type: "checkbox",
           click: function (item) { setSetting('visual-edit', item.checked) },
           checked: settings.getSync('visual-edit')
+        },
+        {
+          label: "Schemat kolorów",
+          submenu: [
+            {
+              label: "Zgodnie z sytemem",
+              type: "radio",
+              click: function() { nativeTheme.themeSource = 'system' },
+            },
+            {
+              label: "Jasny",
+              type: "radio",
+              click: function() { nativeTheme.themeSource = 'light' },
+            },
+            {
+              label: "Ciemny",
+              type: "radio",
+              click: function() { nativeTheme.themeSource = 'dark' },
+            }
+          ]
         }
       ]
     },
