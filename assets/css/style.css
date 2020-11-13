@@ -2,7 +2,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     font-family: 'BlinkMacSystemFont', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
     height: 100%;
 }
@@ -19,7 +20,8 @@ h1 {
     border-bottom: 1px solid #cfcfcf;
     align-items: center;
     justify-content: center;
-    padding-bottom: 20px;;
+    padding-bottom: 20px;
+    ;
 }
 
 .header-area img {
@@ -37,8 +39,9 @@ body {
     width: 25%;
     min-width: 200px;
     border-right: 1px solid #cfcfcf;
-    display: inline-block;
+    display: inline-flex;
     overflow: hidden;
+    flex-direction: column;
 }
 
 .body-pane {
@@ -71,18 +74,18 @@ label {
     font-weight: 600;
 }
 
-#editor-holder > div > h3.card-title {
+#editor-holder>div>h3.card-title {
     font-size: 1.3rem;
     margin-top: 20px;
     margin-bottom: 0;
     font-weight: bold;
 }
 
-#editor-holder > div > h3.card-title ~ p {
+#editor-holder>div>h3.card-title~p {
     opacity: 0.8;
 }
 
-h3.card-title ~ p {
+h3.card-title~p {
     font-size: 80%;
 }
 
@@ -92,7 +95,7 @@ h3.card-title ~ p {
 
 .card-body .btn-group {
     padding-bottom: 15px;
-    border-bottom: 1px solid rgba(0,0,0,.1);
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 
 .card {
@@ -129,7 +132,6 @@ textarea {
     overflow: hidden;
 }
 
-
 .toast-center {
     position: fixed;
     z-index: 55;
@@ -154,13 +156,25 @@ textarea {
 }
 
 @keyframes fadein {
-    from { opacity: 0; top: -30px; }
-    to { opacity: 1; top: 20; }
- }
+    from {
+        opacity: 0;
+        top: -30px;
+    }
+    to {
+        opacity: 1;
+        top: 20;
+    }
+}
 
 @keyframes fadeout {
-    from { opacity: 1; top: 0 }
-    to { opacity: 20; top: -30px; }
+    from {
+        opacity: 1;
+        top: 0
+    }
+    to {
+        opacity: 20;
+        top: -30px;
+    }
 }
 
 .input-button {
@@ -171,34 +185,141 @@ ul {
     height: 100%;
     overflow-y: auto;
     width: 100%;
+    overflow-x: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
-    .bg-light, .body-pane, .card .row {
+    .bg-light,
+    .body-pane,
+    .card .row {
         background: #353535 !important;
     }
 
-    .hljs, .sidebar {
+    .sidebar {
         background: #252525;
+        border-right: 1px solid #555;
     }
 
-    #entries-index, h1, h3, label, li, p {
-        color: #eee;
+    .header-area {
+        border-bottom: 1px solid #555;
     }
 
-    .form-control, .form-control:focus {
+    #entries-index,
+    h1,
+    h3,
+    label,
+    li,
+    p {
+        color: #ccc;
+    }
+
+    .form-control,
+    .form-control:focus,
+    .choices__inner,
+    .choices__list--dropdown {
         background-color: #555;
-        color: #eee;
+        color: #ccc;
+        border-color: #999;
     }
 
     img {
         filter: invert(0.5);
     }
 
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
         background: #000;
     }
+
     ::-webkit-scrollbar-thumb {
         background: #aaa;
+    }
+
+    /* Tomorrow Comment */
+    .hljs-comment,
+    .hljs-quote {
+        color: #969896;
+    }
+
+    /* Tomorrow Red */
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-tag,
+    .hljs-name,
+    .hljs-selector-id,
+    .hljs-selector-class,
+    .hljs-regexp,
+    .hljs-deletion {
+        color: #cc6666;
+    }
+
+    /* Tomorrow Orange */
+    .hljs-number,
+    .hljs-built_in,
+    .hljs-builtin-name,
+    .hljs-literal,
+    .hljs-type,
+    .hljs-params,
+    .hljs-meta,
+    .hljs-link {
+        color: #de935f;
+    }
+
+    /* Tomorrow Yellow */
+    .hljs-attribute {
+        color: #f0c674;
+    }
+
+    /* Tomorrow Green */
+    .hljs-string,
+    .hljs-symbol,
+    .hljs-bullet,
+    .hljs-addition {
+        color: #b5bd68;
+    }
+
+    /* Tomorrow Blue */
+    .hljs-title,
+    .hljs-section {
+        color: #81a2be;
+    }
+
+    /* Tomorrow Purple */
+    .hljs-keyword,
+    .hljs-selector-tag {
+        color: #b294bb;
+    }
+
+    .hljs {
+        display: block;
+        overflow-x: auto;
+        background: #1d1f21;
+        color: #c5c8c6;
+        padding: 0.5em;
+    }
+
+    .hljs-emphasis {
+        font-style: italic;
+    }
+
+    .hljs-strong {
+        font-weight: bold;
+    }
+
+    .choices__list--multiple .choices__item.is-highlighted {
+        background-color: #00a5bb;
+        border: 1px solid #008fa1
+    }
+
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+        background-color: #333333
+    }
+
+    .choices__input {
+        background-color: #555555 !important;
+        color: #ccc;
+    }
+    
+    .choices[data-type*=select-one]:after {
+        border-color: #ccc, transparent, transparent;
     }
 }

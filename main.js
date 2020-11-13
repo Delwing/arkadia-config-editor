@@ -82,16 +82,19 @@ function createWindow() {
               label: "Zgodnie z sytemem",
               type: "radio",
               click: function() { nativeTheme.themeSource = 'system' },
+              checked: nativeTheme.themeSource == 'system'
             },
             {
               label: "Jasny",
               type: "radio",
               click: function() { nativeTheme.themeSource = 'light' },
+              checked: nativeTheme.themeSource == 'light'
             },
             {
               label: "Ciemny",
               type: "radio",
               click: function() { nativeTheme.themeSource = 'dark' },
+              checked: nativeTheme.themeSource == 'dark'
             }
           ]
         }
@@ -150,3 +153,9 @@ ipcMain.on('variable-request', function (event, arg) {
 ipcMain.on('config-saved', function (event, path) {
   process.stdout.write(`SAVED ${path}`)
 })
+
+nativeTheme.on('updated', function() {
+  settings.set('color-scheme', nativeTheme.themeSource)
+})
+
+nativeTheme.themeSource = settings.hasSync('color-scheme') ? settings.getSync('color-scheme') : nativeTheme.themeSource

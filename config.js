@@ -1,4 +1,5 @@
 const { ipcRenderer } = require('electron')
+const { dialog } = require('electron').remote
 
 const fs = require("fs");
 const showdown = require("showdown");
@@ -52,9 +53,39 @@ class ConfigLoader {
     this.readmePath = `${this.path}/${readmeSuffix}`;
     this.schemaPath = `${this.path}/${schemaSuffix}`;
 
-    let promise1 = new Promise(function (resolve, reject) { fs.readFile(this.schemaPath, "utf-8", (err, data) => resolve(JSON.parse(data))); }.bind(this))
-    let promise2 = new Promise(function (resolve, reject) { fs.readFile(this.configPath, "utf-8", (err, data) => resolve(JSON.parse(data))); }.bind(this))
-    let promies3 = new Promise(function (resolve, reject) { fs.readFile(this.readmePath, "utf-8", (err, data) => resolve(data)); }.bind(this))
+
+
+    let promise1 = new Promise(function (resolve, reject) {
+      fs.readFile(this.schemaPath, "utf-8", (err, data) => {
+        resolve(JSON.parse(data))
+      });
+    }.bind(this))
+    let promise2 = new Promise(function (resolve, reject) {
+      fs.readFile(this.configPath, "utf-8", (err, data) => {
+        try {
+          let result = JSON.parse(data)
+          resolve(result)
+        } catch (e) {
+          if (!fs.existsSync(this.configPath)) {
+            dialog.showErrorBox("Plik konfiguracji nie istnieje", `Plik ${this.configPath} nie istnieje.\nJeżeli nie utworzyłeś jeszcze konfiguracji wywołaj w Muldecie:\n/init imie imie_w_wolaczu`)
+          } else {
+            dialog.showErrorBox("Plik konfiguracji zawiera błędy", `Plik konfiguracji ${this.configPath} zawiera błędy lub nie jest to plik JSON.\n${e}`)
+          }
+          reject(e)
+        }
+      });
+    }.bind(this))
+    let promies3 = new Promise(function (resolve, reject) {
+      fs.readFile(this.readmePath, "utf-8", (err, data) => {
+          if(!err) {
+            resolve(data)
+          } else {
+            reject(err)
+            dialog.showErrorBox("Błąd oczytu pliku config.md", `Nie mogę odczytać pliku ${this.readmePath}. Wymagana wersja skryptów to 4.13+ lub plik konfiguracji znajduje się poza katalogiem profilu.`)
+          }
+        
+      });
+    }.bind(this))
 
 
     Promise.all([promise1, promise2, promies3]).then((value) => {
@@ -187,7 +218,7 @@ class ConfigLoader {
     let value = {};
     Object.assign(value, editor.getValue());
     let validationErrors = editor.validate(value)
-    if(validationErrors.length > 0) {
+    if (validationErrors.length > 0) {
       let key = validationErrors[0]
       let elmnt = document.body.querySelector(
         '[data-schemapath="' + key.path + '"]'
