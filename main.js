@@ -27,6 +27,10 @@ function createWindow() {
     shell.openExternal(url)
   })
 
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow.setTitle(`Arkadia Config Editor ${app.getVersion()}`)
+  })
+
   mainWindow.loadFile('index.html')
 
   const template = [
