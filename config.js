@@ -67,7 +67,7 @@ class ConfigLoader {
           resolve(result)
         } catch (e) {
           if (!fs.existsSync(this.configPath)) {
-            dialog.showErrorBox("Plik konfiguracji nie istnieje", `Plik ${this.configPath} nie istnieje.\nJeżeli nie utworzyłeś jeszcze konfiguracji wywołaj w Muldecie:\n/init imie imie_w_wolaczu`)
+            dialog.showErrorBox("Plik konfiguracji nie istnieje", `Plik ${this.configPath} nie istnieje.\nJeżeli nie utworzyłeś jeszcze konfiguracji wywołaj w Mudlecie:\n/init imie imie_w_wolaczu`)
           } else {
             dialog.showErrorBox("Plik konfiguracji zawiera błędy", `Plik konfiguracji ${this.configPath} zawiera błędy lub nie jest to plik JSON.\n${e}`)
           }
