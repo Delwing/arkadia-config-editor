@@ -214,6 +214,7 @@ ul {
     }
 
     .form-control,
+    .form-control:disabled,
     .form-control:focus,
     .choices__inner,
     .choices__list--dropdown {
@@ -222,11 +223,19 @@ ul {
         border-color: #999;
     }
 
+    .form-control:disabled {
+        color: #aaa;
+    }
+
     img {
         filter: invert(0.5);
     }
 
-     ::-webkit-scrollbar {
+    .je-modal {
+        background-color: #555;
+    }
+
+    ::-webkit-scrollbar {
         background: #000;
     }
 
