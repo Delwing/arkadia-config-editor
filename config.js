@@ -87,13 +87,19 @@ class ConfigLoader {
       });
     }.bind(this))
 
-
     Promise.all([promise1, promise2, promies3]).then((value) => {
-
 
       const sourceSchema = value[0];
       const config = value[1];
       const readme = value[2];
+
+      fs.readdirSync(`${this.path}/plugins`, {withFileTypes: true} )
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => `${this.path}/plugins/${dirent.name}/config_schema.json`)
+      .filter(fs.existsSync)
+      .map(configPath => fs.readFileSync(configPath, 'utf-8'))
+      .map(JSON.parse)
+      .forEach(schema => sourceSchema.fields = sourceSchema.fields.concat(schema.fields))
 
       let readmeParsed = this.parseReadme(readme);
 
