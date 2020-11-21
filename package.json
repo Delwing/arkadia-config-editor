@@ -1,7 +1,7 @@
 {
   "name": "arkadia-config-editor",
-  "version": "1.8.0",
-  "description": "A minimal Electron application",
+  "version": "1.9.0",
+  "description": "Edytor konfiguracji",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

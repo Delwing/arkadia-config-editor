@@ -119,7 +119,8 @@ class ConfigLoader {
         this.schema.properties[element.name] = {
           type: type,
           description: description,
-          format: element.content_type
+          format: element.content_type,
+          implicit: element.implicit
         };
 
         if (["list", "map"].includes(element.field_type)) {
@@ -163,7 +164,8 @@ class ConfigLoader {
         disable_array_delete_last_row: true,
         disable_array_delete_all_rows: true,
         prompt_before_delete: false,
-        object_layout: "normal"
+        object_layout: "normal",
+        required_by_default: true
       });
 
       editor.setValue(config);
@@ -237,6 +239,9 @@ class ConfigLoader {
         const element = value[key];
         if (this.schema.properties[key]?.transformer && this.schema.properties[key]?.type == "string") {
           value[key] = this.schema.properties[key].transformer(element);
+        }
+        if(value[key] == "" && this.schema.properties[key]?.implicit) {
+          delete value[key]
         }
       }
     }

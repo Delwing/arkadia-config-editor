@@ -1,3 +1,3 @@
 # Edytor konfiguracji
 
-TODO: Fill in
+Przejdź do strony wtyczki https://github.com/Delwing/arkadia-cfg-editor

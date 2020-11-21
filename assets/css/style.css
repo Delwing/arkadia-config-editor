@@ -188,6 +188,10 @@ ul {
     overflow-x: hidden;
 }
 
+.choices__inner {
+    background: #ffffff;
+}
+
 @media (prefers-color-scheme: dark) {
     .bg-light,
     .body-pane,
