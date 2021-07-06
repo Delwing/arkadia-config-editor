@@ -1,4 +1,9 @@
 const settings = require('electron-settings');
+const { validateExtension } = require('showdown');
+
+const validGuilds = [
+	"KM", "OS", "SGW", "GL", "KG", "CKN", "OHM", "MC", "WKS", "RA", "SC", "ZT", "PE", "KGKS", "ES", "GP", "ZH", "ZS", "NPC", "OK", "KS", "LE"
+]
 
 JSONEditor.defaults.languages.pl = {
 	button_object_properties: "Pola obiektu"
@@ -32,8 +37,20 @@ JSONEditor.defaults.resolvers.unshift(function (schema) {
 JSONEditor.defaults.custom_validators.push((schema, value, path) => {
 	const errors = [];
 	if (schema.format === "textarea" && !settings.getSync('visual-edit')) {
+		let obj;
 		try {
-			JSON.parse(value)
+			obj = JSON.parse(value);
+			if (schema.contentType === "guild" && !settings.getSync('visual-edit') && value !== "") {
+				obj.forEach(val => {
+					if(!validGuilds.includes(val)) {
+						errors.push({
+							path: path,
+							property: 'format',
+							message: `Dane wprowadzone w polu ${path} są nieprawidłowe. Brak gildii ${val}`
+						});
+					}
+				})
+			}
 		} catch(e) {
 			errors.push({
 				path: path,

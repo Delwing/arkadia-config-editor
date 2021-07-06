@@ -91,15 +91,22 @@ class ConfigLoader {
 
       const sourceSchema = value[0];
       const config = value[1];
-      const readme = value[2];
+      let readme = value[2];
 
       fs.readdirSync(`${this.path}/plugins`, {withFileTypes: true} )
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => `${this.path}/plugins/${dirent.name}/config_schema.json`)
-      .filter(fs.existsSync)
-      .map(configPath => fs.readFileSync(configPath, 'utf-8'))
-      .map(JSON.parse)
-      .forEach(schema => sourceSchema.fields = sourceSchema.fields.concat(schema.fields))
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => `${this.path}/plugins/${dirent.name}/config_schema.json`)
+        .filter(fs.existsSync)
+        .map(configPath => fs.readFileSync(configPath, 'utf-8'))
+        .map(JSON.parse)
+        .forEach(schema => sourceSchema.fields = sourceSchema.fields.concat(schema.fields))
+
+      fs.readdirSync(`${this.path}/plugins`, {withFileTypes: true} )
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => `${this.path}/plugins/${dirent.name}/config.md`)
+        .filter(fs.existsSync)
+        .map(configPath => fs.readFileSync(configPath, 'utf-8'))
+        .forEach(pluginReadme => readme += "\n" + pluginReadme)
 
       let readmeParsed = this.parseReadme(readme);
 
@@ -120,6 +127,7 @@ class ConfigLoader {
           type: type,
           description: description,
           format: element.content_type,
+          contentType:  element.content_type,
           implicit: element.implicit
         };
 
@@ -240,7 +248,7 @@ class ConfigLoader {
         if (this.schema.properties[key]?.transformer && this.schema.properties[key]?.type == "string") {
           value[key] = this.schema.properties[key].transformer(element);
         }
-        if(value[key] == "" && this.schema.properties[key]?.implicit) {
+        if(value[key] == null || (value[key] == "" && this.schema.properties[key]?.implicit)) {
           delete value[key]
         }
       }
