@@ -11,8 +11,8 @@
   "repository": "https://github.com/Delwing/arkadia-config-editor",
   "author": "Dargoth",
   "devDependencies": {
-    "electron": "^10.1.5",
-    "electron-builder": "^22.9.1"
+    "electron": "10.1.5",
+    "electron-builder": "22.9.1"
   },
   "dependencies": {
     "@json-editor/json-editor": "^2.5.1",
