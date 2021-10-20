@@ -16,7 +16,9 @@ const toast = document.querySelector(".toast-center");
 const readmeSuffix = "arkadia/config.md";
 const schemaSuffix = "arkadia/config_schema.json";
 
-const { mudlet_colors } = require('./mudlet_colors.js')
+const mudletColors = require('./mudlet_colors.json')
+const mudletKeyModifiers = require('./mudlet_key_modifiers.json')
+
 require("./json_editor_cfg.js")
 
 let editor;
@@ -128,7 +130,8 @@ class ConfigLoader {
           description: description,
           format: element.content_type,
           contentType:  element.content_type,
-          implicit: element.implicit
+          implicit: element.implicit,
+          default_value: element.default_value
         };
 
         if (["list", "map"].includes(element.field_type)) {
@@ -137,8 +140,18 @@ class ConfigLoader {
         }
 
         if (element.content_type == "mudlet_color") {
-          this.schema.properties[element.name].enum = mudlet_colors;
+          this.schema.properties[element.name].enum = mudletColors;
           this.schema.properties[element.name].format = "choices"
+        }
+
+        if (element.content_type == "key_modifiers") {
+            this.schema.properties[element.name].type = "array"
+            this.schema.properties[element.name].format = "checkbox"
+            this.schema.properties[element.name].uniqueItems = true,
+            this.schema.properties[element.name].items = {
+                "type": "string",
+                "enum": mudletKeyModifiers
+              }
         }
 
         keys.add(element.name);
@@ -186,7 +199,30 @@ class ConfigLoader {
           );
           if (selector !== null) {
             let small = selector.querySelector("small, h3 ~ p")
-            small.innerHTML = converter.makeHtml(element);
+            let description = converter.makeHtml(element.replace("\ ", "  "));
+            if (this.schema.properties[key].default_value) {
+                let defaultValue = JSON.stringify(this.schema.properties[key].default_value, null, 4).replace(/^"(.*)"$/, "$1")
+                description = description.substring(0, description.lastIndexOf("<hr />"))
+                description += `<p class="set-default">Domyślna wartość:<br><a class="set" href="#">ustaw</a><pre><code>${defaultValue}</code></pre></p>`
+                description += "<hr />"
+                small.innerHTML = description
+                small.querySelectorAll("a.set").forEach((element) => {
+                    element.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        let setDefaultValue = this.schema.properties[key].default_value
+                        if (this.schema.properties[key].format === "textarea") {
+                            setDefaultValue = defaultValue
+                        }
+                        editor.getEditor(`root.${key}`).setValue(setDefaultValue)
+                        selector.querySelectorAll("textarea").forEach(element => {
+                            element.style.height = ""
+                            element.style.height = element.scrollHeight + "px";
+                        })
+                    })
+                  });
+            } else {
+                small.innerHTML = description
+            }
           } else {
             console.debug("No selector: " + key);
           }
@@ -196,6 +232,7 @@ class ConfigLoader {
       document.querySelectorAll("pre code").forEach((block) => {
         hljs.highlightBlock(block);
       });
+      
 
       document.querySelectorAll("textarea").forEach(textarea => {
         if (textarea.value) {

@@ -1,8 +1,9 @@
 {
   "name": "arkadia-config-editor",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Edytor konfiguracji",
   "main": "main.js",
+  "license": "UNLICENSED",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",

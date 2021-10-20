@@ -192,6 +192,20 @@ ul {
     background: #ffffff;
 }
 
+.set-default {
+    position: relative;
+    display: block;
+}
+
+.set-default .set {
+    position: absolute;
+    top: 37px;
+    right: 5px;
+    font-size: 0.9em;
+    color: inherit;
+    z-index: 999;
+}
+
 @media (prefers-color-scheme: dark) {
     .bg-light,
     .body-pane,

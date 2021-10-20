@@ -1,5 +1,4 @@
 const settings = require('electron-settings');
-const { validateExtension } = require('showdown');
 
 const validGuilds = [
 	"KM", "OS", "SGW", "GL", "KG", "CKN", "OHM", "MC", "WKS", "RA", "SC", "ZT", "PE", "KGKS", "ES", "GP", "ZH", "ZS", "NPC", "OK", "KS", "LE"
@@ -11,7 +10,7 @@ JSONEditor.defaults.languages.pl = {
 JSONEditor.defaults.language = "pl"
 
 
-JSONEditor.defaults.editors.filePath = class myeditor extends JSONEditor.defaults.editors.string {
+JSONEditor.defaults.editors.filePath = class FilePathEditor extends JSONEditor.defaults.editors.string {
 	build() {
 		super.build();
 
