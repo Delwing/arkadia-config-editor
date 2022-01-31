@@ -194,6 +194,20 @@ ul {
 
 .choices__inner {
     background: #ffffff;
+    padding: 0;
+}
+
+.choices__list--single {
+    padding: 0;
+}
+
+.choices__list--single .choices__item {
+    padding: 5px 20px;
+    line-height: 32px;
+}
+
+.choices[data-type*="select-one"] .choices__inner {
+    padding: 0;
 }
 
 .set-default {
@@ -341,9 +355,7 @@ ul {
         border: 1px solid #008fa1
     }
 
-    .choices__list--dropdown .choices__item--selectable.is-highlighted {
-        background-color: #333333
-    }
+
 
     .choices__input {
         background-color: #555555 !important;
