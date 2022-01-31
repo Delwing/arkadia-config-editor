@@ -276,6 +276,9 @@ class ConfigLoader {
       let elmnt = document.body.querySelector(
         '[data-schemapath="' + key.path + '"]'
       );
+      let feedback = elmnt.querySelector(".invalid-feedback")
+      let formText = elmnt.querySelector(".form-text")
+      formText.insertAdjacentElement('beforebegin', feedback)
       elmnt.scrollIntoView()
       return
     }

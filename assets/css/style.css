@@ -155,6 +155,10 @@ textarea {
     display: flex;
 }
 
+.is-invalid input, .is-invalid textarea {
+    border: 1px solid red;
+}
+
 @keyframes fadein {
     from {
         opacity: 0;
