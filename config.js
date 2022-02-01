@@ -144,6 +144,10 @@ class ConfigLoader {
           this.schema.properties[element.name].format = "choices"
         }
 
+        if (element.content_type == "password") {
+          this.schema.properties[element.name].format = "password"
+        }
+
         if (element.content_type == "key_modifiers") {
             this.schema.properties[element.name].type = "array"
             this.schema.properties[element.name].format = "checkbox"
@@ -200,8 +204,11 @@ class ConfigLoader {
           if (selector !== null) {
             let small = selector.querySelector("small, h3 ~ p")
             let description = converter.makeHtml(element.replace("\ ", "  "));
-            if (this.schema.properties[key].default_value) {
+            if (this.schema.properties[key].default_value != null) {
                 let defaultValue = JSON.stringify(this.schema.properties[key].default_value, null, 4).replace(/^"(.*)"$/, "$1")
+                if (defaultValue === "") {
+                  defaultValue = " "
+                }
                 description = description.substring(0, description.lastIndexOf("<hr />"))
                 description += `<p class="set-default">Domyślna wartość:<br><a class="set" href="#">ustaw</a><pre><code>${defaultValue}</code></pre></p>`
                 description += "<hr />"

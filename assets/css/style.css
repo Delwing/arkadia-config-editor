@@ -213,15 +213,33 @@ ul {
 .set-default {
     position: relative;
     display: block;
+    min-height: 1em;
 }
 
 .set-default .set {
     position: absolute;
-    top: 37px;
+    top: 39px;
     right: 5px;
     font-size: 0.9em;
     color: inherit;
-    z-index: 999;
+    z-index: 1;
+}
+
+.show-password {
+    position: relative;
+    top: -32px;
+    text-align: right;
+    padding-right: 20px;
+    display: inline;
+    float: right;
+}
+
+.show-password span {
+    font-size: 11px;
+    cursor: pointer;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -364,5 +382,9 @@ ul {
     
     .choices[data-type*=select-one]:after {
         border-color: #ccc, transparent, transparent;
+    }
+
+    .show-password span {
+        color: #ccc;
     }
 }

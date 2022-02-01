@@ -46,7 +46,6 @@ document.getElementById("load-button").addEventListener("click", openFile)
 Object.keys(mudletColors).forEach(value => {
     let color = mudletColors[value];
     let lightness = color[0] * 0.2126 + color[1] * 0.7152 + color[2] * 0.0722
-    console.log(value, lightness)
     let fg = lightness > 130 ? 'black' : 'white'
     createCSSSelector(`[data-value=${value}]`, `background: rgb(${color[0]}, ${color[1]}, ${color[2]}); color: ${fg};`)
     createCSSSelector(`[data-value=${value}].is-highlighted`, `color: rgb(${color[0]}, ${color[1]}, ${color[2]}); background: ${fg} !important;`)
