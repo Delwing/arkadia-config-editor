@@ -74,6 +74,10 @@ label {
     font-weight: 600;
 }
 
+div {
+    scroll-margin: 30px;
+}
+
 #editor-holder>div>h3.card-title {
     font-size: 1.3rem;
     margin-top: 20px;
