@@ -1,20 +1,15 @@
 import { Container, FormCheck, FormControl } from 'react-bootstrap'
-import { ReactElement } from 'react'
+import { JSX } from 'react'
 import * as React from 'react'
 
-interface CheckBoxInput {
+interface CheckBoxProperties {
   name: string
   values: string
   options: string[]
   updateCallback: React.Dispatch<React.SetStateAction<string>>
 }
 
-export function CheckBoxInput({
-  name,
-  values,
-  options,
-  updateCallback
-}: CheckBoxInput): ReactElement<HTMLInputElement> {
+export function CheckBoxInput({ name, values, options, updateCallback }: CheckBoxProperties): JSX.Element {
   let current: string[] = []
   try {
     current = JSON.parse(values)

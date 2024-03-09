@@ -5,15 +5,27 @@ import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions
 import fs from 'fs'
 import path from 'path'
 
-const themes = fs
-  .readdirSync(path.resolve(__dirname, '../renderer/assets'))
-  .filter((file) => file.match('theme'))
-  .map((file) => file.substring(file.indexOf('-') + 1))
-  .map((file) => file.substring(0, file.indexOf('-')))
-
-let currentTheme = 'sandstone'
+let currentTheme = settings.getSync('theme.bootstrap') ?? 'sandstone'
 
 export default function createMenu(mainWindow: BrowserWindow): Menu {
+  const themes = fs
+    .readdirSync(path.resolve(__dirname, '../renderer/assets'))
+    .filter((file) => file.match('theme'))
+    .map((file) => file.substring(file.indexOf('-') + 1))
+    .map((file) => file.substring(0, file.indexOf('-')))
+    .map(
+      (theme): MenuItemConstructorOptions => ({
+        label: theme,
+        type: 'radio',
+        click: (): void => {
+          currentTheme = theme
+          mainWindow.webContents.send('bootTheme', theme)
+          settings.set('theme.bootstrap', theme)
+        },
+        checked: currentTheme == theme
+      })
+    )
+
   const template: MenuItemConstructorOptions[] = [
     {
       label: 'Plik',
@@ -57,28 +69,6 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
       label: 'Opcje',
       submenu: [
         {
-          label: 'Wizualna edycja map i list',
-          type: 'checkbox',
-          click: function (item): void {
-            settings.set('visual-edit', item.checked)
-          },
-          checked: settings.getSync('visual-edit') as boolean
-        },
-        {
-          label: 'Theme',
-          submenu: themes.map((theme) => {
-            return {
-              label: theme,
-              type: 'radio',
-              click: function (): void {
-                currentTheme = theme
-                mainWindow.webContents.send('bootTheme', theme)
-              },
-              checked: currentTheme == theme
-            }
-          })
-        },
-        {
           label: 'Schemat kolorów',
           submenu: [
             {
@@ -104,7 +94,9 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
                 nativeTheme.themeSource = 'dark'
               },
               checked: nativeTheme.themeSource == 'dark'
-            }
+            },
+            { type: 'separator' },
+            ...themes
           ]
         }
       ]

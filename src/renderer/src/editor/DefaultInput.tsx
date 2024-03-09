@@ -11,6 +11,7 @@ interface DefaultInput {
 export function DefaultInput({ name, value, updateCallback }: DefaultInput): ReactElement<HTMLInputElement> {
   return (
     <FormControl
+      spellCheck={false}
       name={name}
       type={'text'}
       value={value}

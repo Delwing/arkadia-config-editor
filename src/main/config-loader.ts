@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import { dialog } from 'electron'
-import { Config, ConfigResponse, Field, MudletSchema } from '../shared/src/Config'
+import { Config, ConfigResponse, Field, MudletSchema } from '../shared/Config'
 
 const readmeSuffix: string = 'arkadia/config.md'
 const schemaSuffix: string = 'arkadia/config_schema.json'

@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from 'react'
+import { JSX, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 
 export default function Index(): JSX.Element {
@@ -11,6 +11,11 @@ export default function Index(): JSX.Element {
     })
   }, [])
 
+  const onFilterChange = useCallback(
+    (event: { currentTarget: { value: SetStateAction<string> } }) => setFilter(event.currentTarget.value),
+    []
+  )
+
   if (keys.length === 0) {
     return <></>
   }
@@ -18,11 +23,7 @@ export default function Index(): JSX.Element {
   return (
     <div className={'index p-4'}>
       <Form.Group className={'mb-2'}>
-        <Form.Control
-          type={'text'}
-          placeholder={'Filtruj...'}
-          onInput={(event) => setFilter(event.currentTarget.value)}
-        />
+        <Form.Control type={'text'} placeholder={'Filtruj...'} onInput={onFilterChange} />
       </Form.Group>
       <ul className={'keys-index'}>
         {keys
@@ -31,7 +32,7 @@ export default function Index(): JSX.Element {
             <li key={key}>
               <a
                 className={'text-decoration-none'}
-                href="#"
+                role={'button'}
                 onClick={() => {
                   const element = document.body.querySelector(`[data-schemapath="${key}"]`)
                   element?.scrollIntoView()

@@ -61,18 +61,7 @@ textarea {
 }
 
 .set-default {
-  position: relative;
-  display: block;
-  min-height: 1em;
-}
-
-.set-default .set {
-  position: absolute;
-  top: 25px;
-  right: 5px;
-  font-size: 0.9em;
-  color: inherit;
-  z-index: 1;
+  top: 6px;
 }
 
 .index .filter {
@@ -144,6 +133,10 @@ textarea {
     opacity: 20;
     top: -30px;
   }
+}
+
+.description {
+  margin: 10px 3px;
 }
 
 .description h3 {

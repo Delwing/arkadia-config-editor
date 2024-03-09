@@ -26,16 +26,10 @@
     "@json-editor/json-editor": "^2.14.1",
     "bootstrap": "^5.3.3",
     "bootswatch": "^5.3.3",
-    "choices.js": "^10.2.0",
     "electron-settings": "^4.0.2",
-    "prismjs": "^1.29.0",
     "react-bootstrap": "^2.10.1",
-    "react-bootstrap-icons": "^1.11.3",
     "react-highlight": "^0.15.0",
     "react-select": "^5.8.0",
-    "react-simple-code-editor": "^0.13.1",
-    "remove": "^0.1.5",
-    "sass": "^1.71.1",
     "showdown": "^2.1.0"
   },
   "devDependencies": {
@@ -56,6 +50,7 @@
     "prettier": "^3.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sass": "^1.71.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vite-plugin-inspect": "^0.8.3"

@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import createMenu from './menu'
 import { ConfigLoader } from './config-loader'
+import settings from "electron-settings";
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -51,6 +52,7 @@ function createWindow(): void {
   ipcMain.on('open', () => {
     dialog
       .showOpenDialog({
+        defaultPath: `${app.getPath('home')}\\.config\\mudlet\\profiles`,
         securityScopedBookmarks: true,
         filters: [
           { name: 'Konfiguracje', extensions: ['json'] },
@@ -66,6 +68,11 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  ipcMain.handle('getTheme', () => {
+    return settings.getSync('theme.bootstrap')
+  })
+
+
   createWindow()
   electronApp.setAppUserModelId('com.electron')
   app.on('browser-window-created', (_, window) => {

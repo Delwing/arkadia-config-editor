@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { JSX } from 'react'
 import * as React from 'react'
 import { EnumSelect } from './EnumSelect'
 
@@ -8,6 +8,6 @@ interface BooleanProperties {
   updateCallback: React.Dispatch<React.SetStateAction<string>>
 }
 
-export function BooleanSelect({ name, value, updateCallback }: BooleanProperties): ReactElement<HTMLInputElement> {
+export function BooleanSelect({ name, value, updateCallback }: BooleanProperties): JSX.Element {
   return <EnumSelect name={name} value={value} items={['true', 'false']} updateCallback={updateCallback} />
 }

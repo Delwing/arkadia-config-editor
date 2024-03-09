@@ -1,5 +1,5 @@
 import { FormEvent, JSX, RefObject, useEffect, useState } from 'react'
-import { ConfigResponse } from '../../shared/src/Config'
+import { ConfigResponse } from '../../shared/Config'
 import Item from './editor/Item'
 import { Form } from 'react-bootstrap'
 

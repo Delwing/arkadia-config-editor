@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { ConfigResponse } from '../shared/src/Config'
+import { ConfigResponse } from '../shared/Config'
 
 type ConfigCallback = (config: ConfigResponse) => void
 
@@ -10,7 +10,10 @@ export interface CfgApi {
   openConfig(): void
 
   onThemeChange(callback: (theme: 'dark' | 'light') => void): () => void
+
   onBootThemeChange(callback: (theme: string) => void): () => void
+
+  getTheme(): Promise<string>
 }
 
 //eslint-disable-next-line
@@ -35,7 +38,8 @@ const api: CfgApi = {
     ipcRenderer.send('open')
   },
   onThemeChange: (callback) => wrap('theme', callback),
-  onBootThemeChange: (callback) => wrap('bootTheme', callback)
+  onBootThemeChange: (callback) => wrap('bootTheme', callback),
+  getTheme: () => ipcRenderer.invoke('getTheme')
 }
 
 if (process.contextIsolated) {

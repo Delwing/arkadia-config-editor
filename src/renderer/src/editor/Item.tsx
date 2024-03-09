@@ -1,19 +1,21 @@
 import { createRef, JSX, ReactElement, RefObject, useCallback, useEffect, useState } from 'react'
-import { Field } from '../../../shared/src/Config'
-import { Badge, FormGroup, FormLabel, FormText, Row } from 'react-bootstrap'
+import { Field } from '../../../shared/Config'
+import { Badge, FormGroup, FormLabel, FormText, Row, Stack } from 'react-bootstrap'
 
 import { BooleanSelect } from './BooleanSelect'
 import { DefaultInput } from './DefaultInput'
-import { EnumSelect } from './EnumSelect'
 import { TextAreaInput } from './TextAreaInput'
 import { CheckBoxInput } from './CheckBoxInput'
+import { NumberInput } from './NumberInput'
+import { FileInput } from './FileInput'
+import { ColorSelect } from './ColorSelect'
 
 import showdown from 'showdown'
 import Highlight from 'react-highlight'
 import hljs from 'highlight.js'
 
-import mudletColors from '../../../shared/src/mudlet_colors.json'
-import mudletKeys from '../../../shared/src/mudlet_key_modifiers.json'
+import mudletColors from '../../../shared/mudlet_colors.json'
+import mudletKeys from '../../../shared/mudlet_key_modifiers.json'
 
 const converter = new showdown.Converter({
   omitExtraWLInCodeBlocks: false
@@ -39,17 +41,21 @@ export default function Item({ definition, description, value }: Field): JSX.Ele
     switch (definition.field_type) {
       case 'boolean':
         return <BooleanSelect name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
+      case 'number':
+        return <NumberInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
       case 'string':
         switch (definition.content_type) {
           case 'mudlet_color':
             return (
-              <EnumSelect
+              <ColorSelect
                 name={definition.name}
                 value={currentValue}
                 items={mudletColors}
                 updateCallback={setCurrentValue}
               />
             )
+          case 'file_path':
+            return <FileInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
           default:
             return <DefaultInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
         }
@@ -77,13 +83,22 @@ export default function Item({ definition, description, value }: Field): JSX.Ele
     <Row>
       <div data-schemapath={definition.name}>
         <FormGroup controlId={definition.name}>
-          <FormLabel>
-            <h5 className={'mb-0 mt-4'}>{definition.name}</h5>
+          <FormLabel className={'d-flex mt-4 justify-content-between align-items-center'}>
+            <h5 className={'mb-0'}>{definition.name}</h5>
+            <small>
+              <Stack direction={'horizontal'} gap={1}>
+                <Badge pill bg={'secondary'}>
+                  {definition.field_type}
+                </Badge>
+                {definition.content_type && <Badge bg={'secondary'}>{definition.content_type}</Badge>}
+              </Stack>
+            </small>
           </FormLabel>
           {controller()}
           <FormText className={'d-block description'}>
             {description && (
-              <div ref={descriptionRef }
+              <div
+                ref={descriptionRef}
                 dangerouslySetInnerHTML={{
                   __html: converter.makeHtml(description)
                 }}
@@ -93,7 +108,7 @@ export default function Item({ definition, description, value }: Field): JSX.Ele
               <p className="set-default mt-3 mb-1">Domyślna wartość:</p>
               <div className={'position-relative'}>
                 <Badge
-                  className="set text-light position-absolute end-0 me-2 mt-1"
+                  className="set-default text-light position-absolute end-0 me-2"
                   role={'button'}
                   onClick={setDefaultValue}
                 >

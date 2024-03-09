@@ -30,7 +30,7 @@ export function EnumSelect({ name, value, items, updateCallback }: EnumPropertie
             menu: () => 'z-2',
             control: (state) => (state.isFocused ? 'form-control focus' : 'form-control'),
             menuList: () => 'form-control mt-1 p-0 z-2',
-            option: (state) => `p-2 pointer ${state.isFocused ? 'bg-primary' : ''}`
+            option: (state) => `p-2 pointer ${state.isFocused ? 'bg-primary text-light' : ''}`
           }}
         />
       </>
