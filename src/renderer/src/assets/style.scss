@@ -1,0 +1,168 @@
+html {
+  box-sizing: content-box;
+  max-height: 100%;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.config-container {
+
+  overflow: hidden;
+}
+
+.logo {
+  height: 60px;
+  margin-right: -17px;
+}
+
+.je-not-loaded {
+  visibility: hidden;
+}
+
+.index {
+  display: inline-flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  width: 25%;
+}
+
+.index ul {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+.config {
+  overflow-y: auto;
+  max-height: 100%;
+  position: relative;
+  width: 75%;
+}
+
+.keys-index {
+  list-style-type: none;
+  padding-left: 5px;
+  margin: 0;
+  font-size: 0.85em;
+}
+
+textarea {
+  overflow: hidden;
+}
+
+.set-default {
+  position: relative;
+  display: block;
+  min-height: 1em;
+}
+
+.set-default .set {
+  position: absolute;
+  top: 25px;
+  right: 5px;
+  font-size: 0.9em;
+  color: inherit;
+  z-index: 1;
+}
+
+.index .filter {
+  width: inherit;
+  margin-right: 5%;
+}
+
+@media (prefers-color-scheme: light) {
+  @import "highlight.js/scss/a11y-light";
+  .hljs {
+    background: #eee;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  @import "highlight.js/scss/a11y-dark";
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+/** Temporary */
+
+.toast-center {
+  position: fixed;
+  z-index: 55;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  left: 30%;
+  display: none;
+  opacity: 0;
+  top: 20px;
+}
+
+.toast {
+  opacity: 1 !important;
+}
+
+.toast-center.visible {
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 3s;
+  animation: fadein 0.5s, fadeout 0.5s 3s;
+  opacity: 1;
+  display: flex;
+}
+
+.is-invalid input, .is-invalid textarea {
+  border: 1px solid red;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    top: -30px;
+  }
+  to {
+    opacity: 1;
+    top: 20;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+    top: 0
+  }
+  to {
+    opacity: 20;
+    top: -30px;
+  }
+}
+
+.description h3 {
+  font-size: 1.3em;
+}
+
+.show-password {
+  position: relative;
+  top: -32px;
+  text-align: right;
+  padding-right: 20px;
+  display: inline;
+  float: right;
+}
+
+.show-password span {
+  font-size: 11px;
+  cursor: pointer;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}

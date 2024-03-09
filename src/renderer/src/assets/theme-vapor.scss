@@ -1,0 +1,18 @@
+$font-size-base: 0.9rem;
+
+@import "bootswatch/dist/vapor/variables";
+@import "bootstrap/scss/bootstrap";
+@import "bootswatch/dist/vapor/bootswatch";
+@import "./style.scss";
+
+.form-control.focus {
+  color: $input-focus-color;
+  background-color: $input-focus-bg;
+  border-color: $input-focus-border-color;
+  outline: 0;
+  @if $enable-shadows {
+    @include box-shadow($input-box-shadow, $input-focus-box-shadow);
+  } @else {
+    box-shadow: $input-focus-box-shadow;
+  }
+}
