@@ -1,81 +1,85 @@
-import { createRef, JSX, ReactElement, RefObject, useCallback, useEffect, useState } from 'react'
-import { Field } from '../../../shared/Config'
-import { Badge, FormGroup, FormLabel, FormText, Row, Stack } from 'react-bootstrap'
+import {createRef, RefObject, useCallback, useContext, useEffect, useState, JSX} from 'react'
+import {FieldDefinition, Value} from '../../../shared/Config'
+import {Badge, FormGroup, FormLabel, FormText, Row, Stack} from 'react-bootstrap'
 
-import { BooleanSelect } from './BooleanSelect'
-import { DefaultInput } from './DefaultInput'
-import { TextAreaInput } from './TextAreaInput'
-import { CheckBoxInput } from './CheckBoxInput'
-import { NumberInput } from './NumberInput'
-import { FileInput } from './FileInput'
-import { ColorSelect } from './ColorSelect'
+import {DefaultInput} from './DefaultInput'
+import {TextAreaInput} from './TextAreaInput'
+import {CheckBoxInput} from './CheckBoxInput'
+import {NumberInput} from './NumberInput'
+import {FileInput} from './FileInput'
+import {ColorSelect} from './ColorSelect'
+
+import keyModifiers from '../../../shared/mudlet_key_modifiers.json'
 
 import showdown from 'showdown'
 import Highlight from 'react-highlight'
 import hljs from 'highlight.js'
 
-import mudletColors from '../../../shared/mudlet_colors.json'
-import mudletKeys from '../../../shared/mudlet_key_modifiers.json'
+
+import {ConfigContext} from "../Editor";
+import {BooleanSelect} from "./BooleanSelect";
+import {InputProperties} from "./Components";
 
 const converter = new showdown.Converter({
   omitExtraWLInCodeBlocks: false
 })
 
-export default function Item({ definition, description, value }: Field): JSX.Element {
+interface FieldWithDefinition {
+  definition: FieldDefinition
+  value?: Value
+  description?: string
+  collector: (value?: Value) => void
+}
+
+export default function Item({definition, description, value, collector}: FieldWithDefinition): JSX.Element {
   const descriptionRef: RefObject<HTMLDivElement> = createRef()
 
-  let transformedValue = definition.default_value
-  if (definition.field_type === 'list' || definition.field_type === 'map') {
-    transformedValue = JSON.stringify(definition.default_value, null, 4).replace(/^"(.*)"$/, '$1')
-    value = JSON.stringify(definition.default_value, null, 4).replace(/^"(.*)"$/, '$1')
-  }
-  const [currentValue, setCurrentValue] = useState(String(value ?? ''))
+  const config = useContext(ConfigContext)
+  const [currentValue, setCurrentValue] = useState(value)
 
-  const setDefaultValue = useCallback(() => setCurrentValue(String(transformedValue).trim()), [transformedValue])
+  const defautlValueAsText = JSON.stringify(definition.default_value, null, 4)
+    .replace(/^"/, '')
+    .replace(/"$/, '')
+
+  function setValue(value: Value): void {
+    console.log("COLLECTOR", value)
+    collector(value)
+    setCurrentValue(value)
+  }
+
+  const setDefaultValue = useCallback(() => {
+    setValue(definition.default_value);
+  }, [definition.default_value])
 
   useEffect(() => {
     descriptionRef.current?.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el as HTMLElement))
   }, [])
 
-  const controller = (): ReactElement<HTMLInputElement> => {
+  function controller(): (arg: InputProperties) => JSX.Element {
     switch (definition.field_type) {
       case 'boolean':
-        return <BooleanSelect name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
+        return BooleanSelect
       case 'number':
-        return <NumberInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
+        return NumberInput
       case 'string':
         switch (definition.content_type) {
           case 'mudlet_color':
-            return (
-              <ColorSelect
-                name={definition.name}
-                value={currentValue}
-                items={mudletColors}
-                updateCallback={setCurrentValue}
-              />
-            )
+            return ColorSelect
           case 'file_path':
-            return <FileInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
+            return FileInput
           default:
-            return <DefaultInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
+            return DefaultInput
         }
       case 'list':
       case 'map':
         switch (definition.content_type) {
           case 'key_modifiers':
-            return (
-              <CheckBoxInput
-                name={definition.name}
-                values={currentValue}
-                options={mudletKeys}
-                updateCallback={setCurrentValue}
-              />
-            )
+            return CheckBoxInput(keyModifiers)
           default:
-            return <TextAreaInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
+            return TextAreaInput
         }
       default:
-        return <DefaultInput name={definition.name} value={currentValue} updateCallback={setCurrentValue} />
+        return DefaultInput
     }
   }
 
@@ -86,7 +90,7 @@ export default function Item({ definition, description, value }: Field): JSX.Ele
           <FormLabel className={'d-flex mt-4 justify-content-between align-items-center'}>
             <h5 className={'mb-0'}>{definition.name}</h5>
             <small>
-              <Stack direction={'horizontal'} gap={1}>
+              <Stack direction={'horizontal'} className={'me-1'} gap={1}>
                 <Badge pill bg={'secondary'}>
                   {definition.field_type}
                 </Badge>
@@ -94,7 +98,13 @@ export default function Item({ definition, description, value }: Field): JSX.Ele
               </Stack>
             </small>
           </FormLabel>
-          {controller()}
+          {controller()({
+            name: definition.name,
+            value: currentValue,
+            configPath: config.directory,
+            updateCallback: (value: Value) => setValue(value),
+            definition: definition
+          })}
           <FormText className={'d-block description'}>
             {description && (
               <div
@@ -115,13 +125,13 @@ export default function Item({ definition, description, value }: Field): JSX.Ele
                   ustaw
                 </Badge>
                 <Highlight className={'code json'}>
-                  {String(transformedValue !== '' ? transformedValue : '​')}
+                  {(defautlValueAsText !== '' ? defautlValueAsText : '​')}
                 </Highlight>
               </div>
             </div>
           </FormText>
         </FormGroup>
-        <hr />
+        <hr/>
       </div>
     </Row>
   )

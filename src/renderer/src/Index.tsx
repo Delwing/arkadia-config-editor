@@ -7,7 +7,9 @@ export default function Index(): JSX.Element {
 
   useEffect(() => {
     return window.api.onConfig((config) => {
-      setKeys(config.fields.map((field) => field.definition.name).sort())
+      setKeys(Array.from(config.fields.keys()).map((field) => field).sort(function (a, b) {
+        return a.toLowerCase().localeCompare(b.toLowerCase());
+      }))
     })
   }, [])
 
@@ -27,7 +29,7 @@ export default function Index(): JSX.Element {
       </Form.Group>
       <ul className={'keys-index'}>
         {keys
-          .filter((el) => filter === '' || el.match(filter))
+          .filter((el) => filter === '' || el.toLowerCase().match(filter.toLowerCase()))
           .map((key) => (
             <li key={key}>
               <a

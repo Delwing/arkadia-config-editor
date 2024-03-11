@@ -1,19 +1,27 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
-import { ConfigResponse } from '../shared/Config'
+import {contextBridge, ipcRenderer} from 'electron'
+import {electronAPI} from '@electron-toolkit/preload'
+import {ConfigResponse} from '../shared/Config'
 
 type ConfigCallback = (config: ConfigResponse) => void
 
 export interface CfgApi {
   onConfig(callback: ConfigCallback): () => void
 
-  openConfig(): void
+  openConfig(recentFile?: string): void
 
   onThemeChange(callback: (theme: 'dark' | 'light') => void): () => void
 
   onBootThemeChange(callback: (theme: string) => void): () => void
 
   getTheme(): Promise<string>
+
+  getRecent(): Promise<string[]>
+
+  getFilePath(context: string, extensions?: string[]): Promise<string>
+
+  search(search: string): Promise<number>
+
+  stopSearch(): Promise<void>
 }
 
 //eslint-disable-next-line
@@ -34,12 +42,16 @@ const api: CfgApi = {
     ipcRenderer.on(channel, listener)
     return () => ipcRenderer.removeListener(channel, listener)
   },
-  openConfig: () => {
-    ipcRenderer.send('open')
+  openConfig: (filePath) => {
+    ipcRenderer.send('open', filePath)
   },
   onThemeChange: (callback) => wrap('theme', callback),
-  onBootThemeChange: (callback) => wrap('bootTheme', callback),
-  getTheme: () => ipcRenderer.invoke('getTheme')
+  onBootThemeChange: (callback) => wrap('theme:bootstrap', callback),
+  getTheme: () => ipcRenderer.invoke('theme:bootstrap'),
+  getRecent: () => ipcRenderer.invoke('app:recentDocuments'),
+  getFilePath: (context: string, extensions?: string[]): Promise<string> => ipcRenderer.invoke('app:file-pick', context, extensions),
+  search: (value: string) => ipcRenderer.invoke('app:search:start', value),
+  stopSearch: () => ipcRenderer.invoke('app:search:stop')
 }
 
 if (process.contextIsolated) {

@@ -1,44 +1,35 @@
-import { Container, FormCheck, FormControl } from 'react-bootstrap'
-import { JSX } from 'react'
-import * as React from 'react'
+import {Container, FormCheck} from 'react-bootstrap'
+import {JSX} from 'react'
+import {InputProperties} from "./Components";
 
-interface CheckBoxProperties {
-  name: string
-  values: string
-  options: string[]
-  updateCallback: React.Dispatch<React.SetStateAction<string>>
-}
 
-export function CheckBoxInput({ name, values, options, updateCallback }: CheckBoxProperties): JSX.Element {
-  let current: string[] = []
-  try {
-    current = JSON.parse(values)
-  } catch (e) {
-    console.log(values, e)
-  }
+export function CheckBoxInput(options: string[]) {
+  return ({name, value, updateCallback}: InputProperties): JSX.Element => {
+    let current = value as (number | string)[]
 
-  return (
-    <>
-      <FormControl hidden={true} type={'text'} name={name} value={JSON.stringify(current)} readOnly={true} />
-      <Container fluid={true} className={'form-control'}>
-        {options.map((label) => (
-          <FormCheck
-            key={label}
-            id={`${name}.${label}`}
-            label={label}
-            checked={values.indexOf(label) > -1}
-            onChange={(e) =>
-              updateCallback(
-                JSON.stringify(
-                  e.currentTarget.checked
-                    ? current.concat([label])
-                    : current.filter((current: string) => current !== label)
+    return (
+      <>
+        <Container fluid={true} className={'form-control'}>
+          {options.map((label: string | number) => (
+            <FormCheck
+              key={label}
+              id={`${name}.${label}`}
+              label={label}
+              checked={current.includes(label)}
+              value={label}
+              onChange={(e) =>
+                updateCallback(
+                  JSON.stringify(
+                    e.currentTarget.checked
+                      ? current.concat([label])
+                      : current.filter(current => current !== label)
+                  )
                 )
-              )
-            }
-          />
-        ))}
-      </Container>
-    </>
-  )
+              }
+            />
+          ))}
+        </Container>
+      </>
+    )
+  }
 }

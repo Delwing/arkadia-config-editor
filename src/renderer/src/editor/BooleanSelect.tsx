@@ -1,13 +1,7 @@
 import { JSX } from 'react'
-import * as React from 'react'
 import { EnumSelect } from './EnumSelect'
+import {InputProperties} from "./Components";
 
-interface BooleanProperties {
-  name: string
-  value: string
-  updateCallback: React.Dispatch<React.SetStateAction<string>>
-}
-
-export function BooleanSelect({ name, value, updateCallback }: BooleanProperties): JSX.Element {
-  return <EnumSelect name={name} value={value} items={['true', 'false']} updateCallback={updateCallback} />
+export function BooleanSelect(props: InputProperties): JSX.Element {
+  return EnumSelect([true, false])(props)
 }

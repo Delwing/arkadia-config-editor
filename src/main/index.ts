@@ -1,26 +1,52 @@
-import { app, shell, BrowserWindow, ipcMain, dialog, nativeTheme } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import {app, shell, BrowserWindow, nativeTheme, Menu, session} from 'electron'
+import {join} from 'path'
+import {electronApp, optimizer, is} from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import createMenu from './menu'
-import { ConfigLoader } from './config-loader'
-import settings from "electron-settings";
+import {loadConfig} from "./handlers/load-config";
+import './handlers/theme-handlers'
+import './handlers/recent-documents'
+import './handlers/pick-file'
+import './handlers/search'
 
-function createWindow(): void {
+function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
     width: 1800,
     height: 800,
     show: false,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    ...(process.platform === 'linux' ? {icon} : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
-  mainWindow.setMenu(createMenu(mainWindow))
+
+  if (process.platform === 'darwin') {
+    Menu.setApplicationMenu(createMenu(mainWindow))
+  } else {
+    mainWindow.setMenu(createMenu(mainWindow))
+  }
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-    loadConfig('C:\\Users\\delwi\\.config\\mudlet\\profiles\\Delwing\\Delwing.json')
+  })
+
+  mainWindow.webContents.on('found-in-page', (_, result) => {
+    console.log(result)
+  })
+
+  return mainWindow;
+}
+
+app.whenReady().then(() => {
+  electronApp.setAppUserModelId('pl.nullpointer.arkadia-cfg-editor')
+
+  const mainWindow = createWindow()
+  app.on('browser-window-created', (_, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
   mainWindow.webContents.on('will-navigate', (event, url) => {
@@ -42,53 +68,26 @@ function createWindow(): void {
     mainWindow.webContents.send('theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
   })
 
-  function loadConfig(path: string): void {
-    const loader = new ConfigLoader(path)
-    loader.load().then((fields) => {
-      mainWindow.webContents.send('config', fields)
-    })
-  }
-
-  ipcMain.on('open', () => {
-    dialog
-      .showOpenDialog({
-        defaultPath: `${app.getPath('home')}\\.config\\mudlet\\profiles`,
-        securityScopedBookmarks: true,
-        filters: [
-          { name: 'Konfiguracje', extensions: ['json'] },
-          { name: 'Wszystkie pliki', extensions: ['*'] }
-        ]
-      })
-      .then((result) => {
-        if (result.filePaths[0]) {
-          loadConfig(result.filePaths[0])
-        }
-      })
-  })
-}
-
-app.whenReady().then(() => {
-  ipcMain.handle('getTheme', () => {
-    return settings.getSync('theme.bootstrap')
+  app.on('open-file', (_, path) => {
+    loadConfig(mainWindow.webContents, path)
   })
 
-
-  createWindow()
-  electronApp.setAppUserModelId('com.electron')
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-  app.on('activate', function() {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  // if (process.platform !== 'darwin') {
+  //   app.quit()
+  // }
+  app.quit()
 })
 
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
-
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
+// Or if you can not use ES6 imports
+/**
+ const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+ */
+app.whenReady().then(() => {
+  installExtension(REDUX_DEVTOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
+});

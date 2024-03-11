@@ -8,6 +8,7 @@ import path from 'path'
 let currentTheme = settings.getSync('theme.bootstrap') ?? 'sandstone'
 
 export default function createMenu(mainWindow: BrowserWindow): Menu {
+
   const themes = fs
     .readdirSync(path.resolve(__dirname, '../renderer/assets'))
     .filter((file) => file.match('theme'))
@@ -19,7 +20,7 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
         type: 'radio',
         click: (): void => {
           currentTheme = theme
-          mainWindow.webContents.send('bootTheme', theme)
+          mainWindow.webContents.send('theme:bootstrap', theme)
           settings.set('theme.bootstrap', theme)
         },
         checked: currentTheme == theme
@@ -45,6 +46,16 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
           accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O'
         },
         {
+          label:"Open Recent",
+          role:"recentDocuments",
+          "submenu":[
+            {
+              label:"Clear Recent",
+              role:"clearRecentDocuments"
+            }
+          ]
+        },
+        {
           type: 'separator'
         },
         {
@@ -60,8 +71,26 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
           label: 'Szukaj',
           accelerator: process.platform === 'darwin' ? 'Cmd+F' : 'Ctrl+F',
           click: function (): void {
-            mainWindow.webContents.send('on-find')
+
           }
+        },
+        {
+          role: "selectAll"
+        },
+        {
+          role: "undo"
+        },
+        {
+          role: "redo"
+        },
+        {
+          role: "copy"
+        },
+        {
+          role: "paste"
+        },
+        {
+          role: "cut"
         }
       ]
     },
@@ -131,5 +160,6 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
       ]
     }
   ]
+
   return Menu.buildFromTemplate(template)
 }

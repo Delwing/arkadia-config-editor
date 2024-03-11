@@ -1,14 +1,8 @@
 import { FormControl } from 'react-bootstrap'
-import { ReactElement } from 'react'
-import * as React from 'react'
+import {JSX} from 'react'
+import {InputProperties} from "./Components";
 
-interface NumberProperties {
-  name: string
-  value: string
-  updateCallback: React.Dispatch<React.SetStateAction<string>>
-}
-
-export function NumberInput({ name, value, updateCallback }: NumberProperties): ReactElement<HTMLInputElement> {
+export function NumberInput({ name, value, updateCallback }: InputProperties): JSX.Element {
   return (
     <FormControl
       spellCheck={false}

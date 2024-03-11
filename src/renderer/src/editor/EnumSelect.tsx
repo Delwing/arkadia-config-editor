@@ -1,31 +1,25 @@
-import { FormSelect } from 'react-bootstrap'
-import { ReactElement } from 'react'
-import * as React from 'react'
+import {JSX} from 'react'
 import Select from 'react-select'
+import {InputProperties} from "./Components";
+import {Value} from "../../../shared/Config";
 
-interface EnumProperties {
-  name: string
-  value: string
-  items: string[]
-  updateCallback: React.Dispatch<React.SetStateAction<string>>
-}
-
-const selectForm = true
-
-export function EnumSelect({ name, value, items, updateCallback }: EnumProperties): ReactElement<HTMLInputElement> {
-  if (selectForm) {
-    const options = items.map((item: string) => ({ value: item, label: item }))
-    const defaultValue = options.filter((el) => el.value == value)[0]
+export function EnumSelect(items: Value[]) {
+  return ({name, value, updateCallback}: InputProperties): JSX.Element => {
+    const options = items.map(value => ({value: value}))
+    const selected = value ?? options[0].value
     return (
       <>
         <Select
           unstyled={true}
           name={name}
           options={options}
-          defaultValue={defaultValue}
+          value={{value: selected}}
+          getOptionLabel={(value) => value.value?.toString() ?? ''}
+          getOptionValue={(value => value.value?.toString())}
           isSearchable={true}
           menuShouldScrollIntoView={false}
           menuPlacement={'auto'}
+          onChange={value => updateCallback(value!.value)}
           classNames={{
             menu: () => 'z-2',
             control: (state) => (state.isFocused ? 'form-control focus' : 'form-control'),
@@ -36,12 +30,5 @@ export function EnumSelect({ name, value, items, updateCallback }: EnumPropertie
       </>
     )
   }
-
-  return (
-    <FormSelect value={value.toString()} onSelect={(e) => updateCallback(e.currentTarget.value)}>
-      {items.map((value) => (
-        <option key={value}>{value}</option>
-      ))}
-    </FormSelect>
-  )
 }
+

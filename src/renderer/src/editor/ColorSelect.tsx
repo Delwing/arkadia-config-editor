@@ -1,14 +1,9 @@
-import { ReactElement } from 'react'
-import * as React from 'react'
-import Select, { CSSObjectWithLabel } from 'react-select'
+import {JSX} from "react";
+import Select, {CSSObjectWithLabel} from 'react-select'
 import colors from '../../../shared/colors.json'
+import {InputProperties} from "./Components";
+import mudletColors from '../../../shared/mudlet_colors.json'
 
-interface ColorSelectProperties {
-  name: string
-  value: string
-  items: string[]
-  updateCallback: React.Dispatch<React.SetStateAction<string>>
-}
 
 const dot = (color: number[]): CSSObjectWithLabel => ({
   alignItems: 'center',
@@ -26,12 +21,11 @@ const dot = (color: number[]): CSSObjectWithLabel => ({
 })
 
 export function ColorSelect({
-  name,
-  value,
-  items,
-  updateCallback
-}: ColorSelectProperties): ReactElement<HTMLInputElement> {
-  const options = items.map((item: string) => ({ value: item, label: item, color: colors[item] })) as {
+                              name,
+                              value,
+                              updateCallback
+                            }: InputProperties): JSX.Element {
+  const options = mudletColors.map((item: string) => ({value: item, label: item, color: colors[item]})) as {
     value: string
     label: string
     color: number[]
@@ -55,8 +49,8 @@ export function ColorSelect({
           option: (state) => `p-2 pointer ${state.isFocused ? 'bg-primary text-light' : ''}`
         }}
         styles={{
-          singleValue: (styles, { data }) => ({ ...styles, ...dot(data.color) }),
-          option: (styles, { data }) => ({ ...styles, ...dot(data.color) })
+          singleValue: (styles, {data}) => ({...styles, ...dot(data.color)}),
+          option: (styles, {data}) => ({...styles, ...dot(data.color)})
         }}
       />
       <code>
