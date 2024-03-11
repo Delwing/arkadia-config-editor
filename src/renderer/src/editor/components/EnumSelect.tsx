@@ -1,11 +1,11 @@
-import {JSX} from 'react'
+import { JSX } from 'react'
 import Select from 'react-select'
-import {InputProperties} from "./Components";
-import {Value} from "../../../shared/Config";
+import { InputProperties } from '../Components'
+import { Value } from '../../../../shared/Config'
 
 export function EnumSelect(items: Value[]) {
-  return ({name, value, updateCallback}: InputProperties): JSX.Element => {
-    const options = items.map(value => ({value: value}))
+  return function EnumSelectImpl({ name, value, updateCallback }: InputProperties): JSX.Element {
+    const options = items.map((value) => ({ value: value }))
     const selected = value ?? options[0].value
     return (
       <>
@@ -13,13 +13,13 @@ export function EnumSelect(items: Value[]) {
           unstyled={true}
           name={name}
           options={options}
-          value={{value: selected}}
+          value={{ value: selected }}
           getOptionLabel={(value) => value.value?.toString() ?? ''}
-          getOptionValue={(value => value.value?.toString())}
+          getOptionValue={(value) => value.value?.toString()}
           isSearchable={true}
           menuShouldScrollIntoView={false}
           menuPlacement={'auto'}
-          onChange={value => updateCallback(value!.value)}
+          onChange={(value) => updateCallback(value!.value)}
           classNames={{
             menu: () => 'z-2',
             control: (state) => (state.isFocused ? 'form-control focus' : 'form-control'),
@@ -31,4 +31,3 @@ export function EnumSelect(items: Value[]) {
     )
   }
 }
-

@@ -1,4 +1,4 @@
-import {Button, Container, Nav, Navbar} from 'react-bootstrap'
+import { Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { createRef, JSX, RefObject, useEffect, useState } from 'react'
 import Editor from './Editor'
 import Index from './Index'
@@ -13,10 +13,10 @@ const styleElement = document.createElement('style')
 document.head.appendChild(styleElement)
 
 async function loadStyle(name: string): Promise<void> {
-  console.log("LOADING")
+  console.log('LOADING')
   const { default: style } = await styles[`./assets/theme-${name}.scss`]()
   styleElement.textContent = style
-  console.log("LOADED")
+  console.log('LOADED')
 }
 
 function App(): JSX.Element {

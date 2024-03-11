@@ -1,30 +1,28 @@
-import {createContext, createRef, FormEvent, JSX, RefObject, useEffect, useState} from 'react'
-import {Config, ConfigResponse, Value} from '../../shared/Config'
+import { createContext, createRef, FormEvent, JSX, RefObject, useEffect, useState } from 'react'
+import { Config, ConfigResponse, Value } from '../../shared/Config'
 import Item from './editor/Item'
-import {Form} from 'react-bootstrap'
-import * as React from "react";
-import ItemWithoutDefinition from "./editor/ItemWithoutDefinition";
+import { Form } from 'react-bootstrap'
+import * as React from 'react'
+import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
 
 class ValueCollector {
-  config : Config = {}
+  config: Config = {}
 
-  //TODO to change of course
-  set(key: string, value: Value): Value {
+  set(key: string, value: Value): void {
     this.config[key] = value
-    return value
   }
 }
 
-export const ConfigContext: React.Context<{ directory: string }> = createContext({directory: ''})
+export const ConfigContext: React.Context<{ directory: string }> = createContext({ directory: '' })
 
 interface EditorProps {
   formRef: RefObject<HTMLFormElement>
 }
 
-function Editor({formRef}: EditorProps): JSX.Element {
+function Editor({ formRef }: EditorProps): JSX.Element {
   const valueCollector = new ValueCollector()
   const ref: RefObject<HTMLDivElement> = createRef()
-  const [recent, setRecent] = useState([] as string[]);
+  const [recent, setRecent] = useState([] as string[])
   const [config, setConfig] = useState<ConfigResponse>()
   const [key, setKey] = useState(new Date().getTime())
 
@@ -36,47 +34,65 @@ function Editor({formRef}: EditorProps): JSX.Element {
   }, [])
 
   useEffect(() => {
-    window.api.getRecent().then(recent => {
+    window.api.getRecent().then((recent) => {
       setRecent(recent)
     })
-  }, []);
+  }, [])
 
   if (!config) {
-    return <>
-      <h5>Ostatnio otwarte:</h5>
-      <ul style={{listStyleType: 'none'}}>
-        {recent.map(recent => <li key={recent}><a className={'text-decoration-none'}
-                                                  onClick={() => window.api.openConfig(recent)}
-                                                  role={'button'} title={recent}>{recent.replace(/^.*[\\/]/, '')}</a>
-        </li>)}
-      </ul>
-    </>
+    return (
+      <>
+        <h5>Ostatnio otwarte:</h5>
+        <ul style={{ listStyleType: 'none' }}>
+          {recent.map((recent) => (
+            <li key={recent}>
+              <a
+                className={'text-decoration-none'}
+                onClick={() => window.api.openConfig(recent)}
+                role={'button'}
+                title={recent}
+              >
+                {recent.replace(/^.*[\\/]/, '')}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
   }
 
   function onSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()
-    const invalid = event.currentTarget.querySelector(".form-control.is-invalid")
+    const invalid = event.currentTarget.querySelector('.form-control.is-invalid')
     if (invalid) {
       invalid.parentElement?.parentElement?.scrollIntoView()
       return
     }
-    // const formData = new FormData(event.currentTarget)
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(key, typeof value, value)
-    // }
-    console.log(valueCollector.config)
+
+    for (const configKey in valueCollector.config) {
+      console.log(configKey, valueCollector.config[configKey])
+    }
   }
 
-  const items = Array.from(config.fields.entries()).map(([key, field]) => (
-    field.definition ?
+  const items: JSX.Element[] = Array.from(config.fields.entries()).map(([key, field]) =>
+    field.definition ? (
       <Item
         key={key}
         definition={field.definition!}
         description={field.description}
-        value={valueCollector.set(key, field.value!)}
+        value={field.value}
         collector={(value?: Value) => valueCollector.set(key, value ?? '')}
-      /> : <ItemWithoutDefinition key={key} name={key} value={field.value!}/>
-  ))
+      />
+    ) : (
+      <ItemWithoutDefinition
+        key={key}
+        name={key}
+        configPath={config.path}
+        value={field.value!}
+        collector={(value?: Value) => valueCollector.set(key, value ?? '')}
+      />
+    )
+  )
 
   return (
     <ConfigContext.Provider value={config}>
@@ -89,8 +105,7 @@ function Editor({formRef}: EditorProps): JSX.Element {
             </p>
           </div>
         </div>
-
-        <hr className={'mt-1 mb-4'}/>
+        <hr className={'mt-1 mb-4'} />
         {items}
       </Form>
     </ConfigContext.Provider>

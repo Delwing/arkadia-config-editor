@@ -1,6 +1,6 @@
-import {FormControl} from 'react-bootstrap'
-import {JSX} from 'react'
-import {InputProperties} from "./Components";
+import { FormControl } from 'react-bootstrap'
+import { JSX } from 'react'
+import { InputProperties } from '../Components'
 
 export function DefaultInput({ name, value, updateCallback }: InputProperties): JSX.Element {
   return (

@@ -5,11 +5,14 @@ export interface ConfigResponse {
   fields: Map<string, Field>
 }
 
+export type FieldType = 'string' | 'boolean' | 'list' | 'map' | 'number'
+export type ContentType = 'mudlet_color' | 'key_modifiers' | 'file_path' | 'password'
+
 export interface FieldDefinition {
   name: string
   default_value: Value
-  field_type: 'string' | 'boolean' | 'list' | 'map' | 'number'
-  content_type?: 'mudlet_color' | 'key_modifiers' | 'file_path' | 'password'
+  field_type: FieldType
+  content_type?: ContentType
   implicit?: boolean
 }
 
@@ -23,7 +26,6 @@ export interface Field {
   description?: string
 }
 
-export type Value =  boolean | number | string | string[] | number[] | Map<string, boolean | string | number>
+export type Value = boolean | number | string | string[] | number[] | Map<string, boolean | string | number>
 
-export interface Config
-  extends Record<string, Value> {}
+export interface Config extends Record<string, Value> {}

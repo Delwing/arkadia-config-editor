@@ -1,11 +1,10 @@
-import {Container, FormCheck} from 'react-bootstrap'
-import {JSX} from 'react'
-import {InputProperties} from "./Components";
-
+import { Container, FormCheck } from 'react-bootstrap'
+import { JSX } from 'react'
+import { InputProperties } from '../Components'
 
 export function CheckBoxInput(options: string[]) {
-  return ({name, value, updateCallback}: InputProperties): JSX.Element => {
-    let current = value as (number | string)[]
+  return function CheckBoxImplementation({ name, value, updateCallback }: InputProperties): JSX.Element {
+    const current = value as (number | string)[]
 
     return (
       <>
@@ -20,9 +19,7 @@ export function CheckBoxInput(options: string[]) {
               onChange={(e) =>
                 updateCallback(
                   JSON.stringify(
-                    e.currentTarget.checked
-                      ? current.concat([label])
-                      : current.filter(current => current !== label)
+                    e.currentTarget.checked ? current.concat([label]) : current.filter((current) => current !== label)
                   )
                 )
               }

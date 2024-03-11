@@ -1,6 +1,6 @@
 import { FormControl } from 'react-bootstrap'
-import {JSX} from 'react'
-import {InputProperties} from "./Components";
+import { JSX } from 'react'
+import { InputProperties } from '../Components'
 
 export function NumberInput({ name, value, updateCallback }: InputProperties): JSX.Element {
   return (
@@ -8,7 +8,7 @@ export function NumberInput({ name, value, updateCallback }: InputProperties): J
       spellCheck={false}
       name={name}
       type={'number'}
-      value={value}
+      value={value as number}
       onChange={(e) => updateCallback(e.currentTarget.value)}
     />
   )
