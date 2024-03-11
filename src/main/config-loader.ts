@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
-import {dialog} from 'electron'
-import {Config, ConfigResponse, Field, MudletSchema} from '../shared/Config'
+import { dialog } from 'electron'
+import { Config, ConfigResponse, Field, MudletSchema } from '../shared/Config'
 
 const readmeSuffix: string = 'arkadia/config.md'
 const schemaSuffix: string = 'arkadia/config_schema.json'
@@ -21,27 +21,27 @@ export class ConfigLoader {
     return Promise.all([this.readSchema(), this.readConfig(), this.readAllReadmes().then(this.parseReadme)]).then(
       ([schema, config, readme]): ConfigResponse => {
         const fields = schema.fields.reduce((map, definition) => {
-          map.set(definition.name, ({
+          map.set(definition.name, {
             definition: definition,
             value: config[definition.name],
             description: readme[definition.name]
-          }))
-          return map;
+          })
+          return map
         }, new Map<string, Field>())
         Object.entries(config).forEach(([key, value]) => {
           if (!fields.has(key)) {
             fields.set(key, {
-              value: value
+              value: value!
             })
           }
         })
 
-        return ({
-          name: config[characterNameField] as string ?? path.basename(this.configPath, path.extname(this.configPath)),
+        return {
+          name: (config[characterNameField] as string) ?? path.basename(this.configPath, path.extname(this.configPath)),
           directory: this.directory,
           path: this.configPath,
           fields: fields
-        });
+        }
       }
     )
   }
@@ -64,14 +64,14 @@ export class ConfigLoader {
           schema.fields = schema.fields.concat(nextSchema.fields)
           return schema
         },
-        {fields: []}
+        { fields: [] }
       )
     )
   }
 
   private readPluginsSchemas(): Promise<MudletSchema>[] {
     return fs
-      .readdirSync(`${this.directory}/plugins`, {withFileTypes: true})
+      .readdirSync(`${this.directory}/plugins`, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
       .map((dirent) => `${this.directory}/plugins/${dirent.name}/config_schema.json`)
       .filter(fs.existsSync)
@@ -108,7 +108,7 @@ export class ConfigLoader {
 
   private readPluginsReadme(): Promise<string>[] {
     return fs
-      .readdirSync(`${this.directory}/plugins`, {withFileTypes: true})
+      .readdirSync(`${this.directory}/plugins`, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
       .map((dirent) => `${this.directory}/plugins/${dirent.name}/config.md`)
       .filter(fs.existsSync)

@@ -1,6 +1,6 @@
-import {contextBridge, ipcRenderer} from 'electron'
-import {electronAPI} from '@electron-toolkit/preload'
-import {ConfigResponse} from '../shared/Config'
+import { contextBridge, ipcRenderer } from 'electron'
+import { electronAPI } from '@electron-toolkit/preload'
+import { ConfigResponse } from '../shared/Config'
 
 type ConfigCallback = (config: ConfigResponse) => void
 
@@ -21,7 +21,13 @@ export interface CfgApi {
 
   search(search: string): Promise<number>
 
+  clearSearch(): Promise<void>
+
   stopSearch(): Promise<void>
+  searchNext(): Promise<void>
+  searchPrev(): Promise<void>
+
+  listenToSearch(callback: (result: Electron.Result) => void): () => void
 }
 
 //eslint-disable-next-line
@@ -49,11 +55,22 @@ const api: CfgApi = {
   onBootThemeChange: (callback) => wrap('theme:bootstrap', callback),
   getTheme: () => ipcRenderer.invoke('theme:bootstrap'),
   getRecent: () => ipcRenderer.invoke('app:recentDocuments'),
-  getFilePath: (context: string, extensions?: string[]): Promise<string> => ipcRenderer.invoke('app:file-pick', context, extensions),
+  getFilePath: (context: string, extensions?: string[]): Promise<string> =>
+    ipcRenderer.invoke('app:file-pick', context, extensions),
   search: (value: string) => ipcRenderer.invoke('app:search:start', value),
-  stopSearch: () => ipcRenderer.invoke('app:search:stop')
+  clearSearch: () => ipcRenderer.invoke('app:search:clear'),
+  stopSearch: () => ipcRenderer.invoke('app:search:stop'),
+  searchNext: () => ipcRenderer.invoke('app:search:next'),
+  searchPrev: () => ipcRenderer.invoke('app:search:prev'),
+  listenToSearch: (callback) => {
+    const channel = 'app:search:found'
+    const listener = (_, result: Electron.Result): void => {
+      callback(result)
+    }
+    ipcRenderer.on(channel, listener)
+    return () => ipcRenderer.removeListener(channel, listener)
+  }
 }
-
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)

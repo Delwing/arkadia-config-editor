@@ -81,9 +81,8 @@ function App(): JSX.Element {
       </Navbar>
       <Container fluid={true} className={'d-flex config-container g-0 gap-1'}>
         <Index />
-        <div className={'config p-4 border-start border-secondary-subtle shadow-sm'}>
-          <Editor formRef={formRef} />
-        </div>
+
+        <Editor formRef={formRef} />
       </Container>
     </>
   )

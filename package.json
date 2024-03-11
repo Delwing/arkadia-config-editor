@@ -23,7 +23,6 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
-    "@json-editor/json-editor": "^2.14.1",
     "bootstrap": "^5.3.3",
     "bootswatch": "^5.3.3",
     "electron-settings": "^4.0.2",

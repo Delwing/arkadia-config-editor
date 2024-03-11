@@ -1,20 +1,20 @@
-import {app, shell, BrowserWindow, nativeTheme, Menu, session} from 'electron'
-import {join} from 'path'
-import {electronApp, optimizer, is} from '@electron-toolkit/utils'
+import { app, shell, BrowserWindow, nativeTheme, Menu } from 'electron'
+import { join } from 'path'
+import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import createMenu from './menu'
-import {loadConfig} from "./handlers/load-config";
+import { loadConfig } from './handlers/load-config'
 import './handlers/theme-handlers'
 import './handlers/recent-documents'
 import './handlers/pick-file'
-import './handlers/search'
+import { registerSearchHandlersForWindow } from './handlers/search'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
-    width: 1800,
+    width: 1600,
     height: 800,
     show: false,
-    ...(process.platform === 'linux' ? {icon} : {}),
+    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -31,11 +31,9 @@ function createWindow(): BrowserWindow {
     mainWindow.show()
   })
 
-  mainWindow.webContents.on('found-in-page', (_, result) => {
-    console.log(result)
-  })
+  registerSearchHandlersForWindow(mainWindow)
 
-  return mainWindow;
+  return mainWindow
 }
 
 app.whenReady().then(() => {
@@ -71,7 +69,6 @@ app.whenReady().then(() => {
   app.on('open-file', (_, path) => {
     loadConfig(mainWindow.webContents, path)
   })
-
 })
 
 app.on('window-all-closed', () => {
@@ -80,14 +77,3 @@ app.on('window-all-closed', () => {
   // }
   app.quit()
 })
-
-import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
-// Or if you can not use ES6 imports
-/**
- const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
- */
-app.whenReady().then(() => {
-  installExtension(REDUX_DEVTOOLS)
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log('An error occurred: ', err));
-});

@@ -22,7 +22,7 @@ export interface MudletSchema {
 
 export interface Field {
   definition?: FieldDefinition
-  value?: boolean | number | string | Map<string, boolean | string | number>
+  value?: Value
   description?: string
 }
 

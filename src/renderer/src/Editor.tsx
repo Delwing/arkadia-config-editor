@@ -1,9 +1,10 @@
 import { createContext, createRef, FormEvent, JSX, RefObject, useEffect, useState } from 'react'
 import { Config, ConfigResponse, Value } from '../../shared/Config'
 import Item from './editor/Item'
-import { Form } from 'react-bootstrap'
+import { Container, Form } from 'react-bootstrap'
 import * as React from 'react'
 import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
+import { FiletypeJson } from 'react-bootstrap-icons'
 
 class ValueCollector {
   config: Config = {}
@@ -42,21 +43,25 @@ function Editor({ formRef }: EditorProps): JSX.Element {
   if (!config) {
     return (
       <>
-        <h5>Ostatnio otwarte:</h5>
-        <ul style={{ listStyleType: 'none' }}>
-          {recent.map((recent) => (
-            <li key={recent}>
-              <a
-                className={'text-decoration-none'}
-                onClick={() => window.api.openConfig(recent)}
-                role={'button'}
-                title={recent}
-              >
-                {recent.replace(/^.*[\\/]/, '')}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <Container className={'mt-4'}>
+          <h5>Ostatnio otwarte:</h5>
+          <hr/>
+          <ul className={'border-start border-1 ps-3 border-primary-subtle'} style={{ listStyleType: 'none' }}>
+            {recent.map((recent) => (
+              <li key={recent} className={'my-3'}>
+                <a
+                  className={'text-decoration-none'}
+                  onClick={() => window.api.openConfig(recent)}
+                  role={'button'}
+                  title={recent}
+                >
+                  <FiletypeJson className={'me-1'} />
+                  {recent.replace(/^.*[\\/]/, '')}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Container>
       </>
     )
   }
@@ -96,18 +101,20 @@ function Editor({ formRef }: EditorProps): JSX.Element {
 
   return (
     <ConfigContext.Provider value={config}>
-      <Form key={key} ref={formRef} onSubmit={(event) => onSubmit(event)}>
-        <div ref={ref} className={'d-flex gap-2 align-items-center'}>
-          <div>
-            <p className={'h3 m-0'}>{config.name}</p>
-            <p className={'m-0 small font-monospace text-muted'}>
-              <em>{config.path}</em>
-            </p>
+      <div className={'config p-4 border-start border-secondary-subtle shadow-sm'}>
+        <Form key={key} ref={formRef} onSubmit={(event) => onSubmit(event)}>
+          <div ref={ref} className={'d-flex gap-2 align-items-center'}>
+            <div>
+              <p className={'h3 m-0'}>{config.name}</p>
+              <p className={'m-0 small font-monospace text-muted'}>
+                <em>{config.path}</em>
+              </p>
+            </div>
           </div>
-        </div>
-        <hr className={'mt-1 mb-4'} />
-        {items}
-      </Form>
+          <hr className={'mt-1 mb-4'} />
+          {items}
+        </Form>
+      </div>
     </ConfigContext.Provider>
   )
 }

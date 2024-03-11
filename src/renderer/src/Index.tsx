@@ -7,9 +7,13 @@ export default function Index(): JSX.Element {
 
   useEffect(() => {
     return window.api.onConfig((config) => {
-      setKeys(Array.from(config.fields.keys()).map((field) => field).sort(function (a, b) {
-        return a.toLowerCase().localeCompare(b.toLowerCase());
-      }))
+      setKeys(
+        Array.from(config.fields.keys())
+          .map((field) => field)
+          .sort(function (a, b) {
+            return a.toLowerCase().localeCompare(b.toLowerCase())
+          })
+      )
     })
   }, [])
 

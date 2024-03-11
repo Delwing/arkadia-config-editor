@@ -1,5 +1,5 @@
 import settings from 'electron-settings'
-import { BrowserWindow, Menu, nativeTheme } from 'electron'
+import { BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron'
 import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions
 
 import fs from 'fs'
@@ -71,7 +71,7 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
           label: 'Szukaj',
           accelerator: process.platform === 'darwin' ? 'Cmd+F' : 'Ctrl+F',
           click: function (): void {
-
+            ipcMain.emit('app:search:open')
           }
         },
         {
