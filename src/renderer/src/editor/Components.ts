@@ -37,7 +37,7 @@ export function controller(fieldType: FieldType, contentType?: ContentType): (ar
         case 'password':
           return PasswordInput
         default:
-          return PasswordInput
+          return DefaultInput
       }
     case 'list':
     case 'map':
