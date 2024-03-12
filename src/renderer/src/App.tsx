@@ -29,8 +29,8 @@ function App(): JSX.Element {
   useEffect(() => {
     return window.api.onConfig((config): void => {
       setLoading(true)
-      setKey(new Date().getTime())
       setTimeout(() => {
+        setKey(new Date().getTime())
         setConfig(config)
         setLoading(false)
       }, 5)
@@ -64,7 +64,7 @@ function App(): JSX.Element {
   }, [])
 
   const element = useMemo(
-    () => (!config ? <Recent /> : <ConfigContainer loadKey={key} config={config} />),
+    () => (!config ? <Recent /> : <ConfigContainer key={key} loadKey={key} config={config} />),
     [key, config]
   )
 

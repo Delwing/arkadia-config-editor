@@ -48,6 +48,8 @@ export function ColorSelect({ name, value, updateCallback }: InputProperties): J
           option: (styles, { data }) => ({ ...styles, ...dot(data.color) })
         }}
       />
+      <div>Sample</div>
+      <div>Sample</div>
     </>
   )
 }

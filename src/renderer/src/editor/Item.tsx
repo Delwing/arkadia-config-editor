@@ -32,6 +32,10 @@ export default function Item({ definition, description, value, collector }: Fiel
     }
   }, [])
 
+  useEffect(() => {
+    descriptionRef.current?.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el as HTMLElement))
+  }, [])
+
   function updateValueAndCollect(_: Value, newState: Value): Value {
     if (newState !== '' || !definition.implicit) {
       collector(newState)
@@ -40,10 +44,6 @@ export default function Item({ definition, description, value, collector }: Fiel
   }
 
   const [currentValue, updateValue] = useReducer(updateValueAndCollect, value!)
-
-  useEffect(() => {
-    descriptionRef.current?.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el as HTMLElement))
-  }, [])
 
   return (
     <Row>

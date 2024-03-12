@@ -48,7 +48,7 @@ function Editor({ config }: EditorProps): JSX.Element {
   const items: JSX.Element[] = Array.from(config.fields.entries()).map(([key, field]) =>
     field.definition ? (
       <Item
-        key={key + String(field.value)}
+        key={key}
         definition={field.definition!}
         description={field.description}
         value={field.value}
@@ -56,7 +56,7 @@ function Editor({ config }: EditorProps): JSX.Element {
       />
     ) : (
       <ItemWithoutDefinition
-        key={key + String(field.value)}
+        key={key}
         name={key}
         configPath={config.path}
         value={field.value!}

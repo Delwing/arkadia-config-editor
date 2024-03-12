@@ -16,30 +16,34 @@ import Feedback from 'react-bootstrap/Feedback'
 
 const keyTable = Object.keys(keys)
 
+let listener
+
 export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.Element {
   const ref: RefObject<HTMLInputElement> = createRef()
   const [keyGrab, setKeyGrab] = useState(false)
   const [keyGrabbed, setKeyGrabbed] = useState<string | undefined>(undefined)
   const [validKey, setValidKey] = useState(true)
 
-  const keyGrabListener = (e): void => {
-    const code = e.code.replace(/^(Key|Digit)/, '')
-    if (keyTable.includes(code)) {
-      setValidKey(true)
-      setKeyGrabbed(code)
-    } else {
-      setValidKey(false)
-      setKeyGrabbed('')
+  useEffect(() => {
+    listener = (e): void => {
+      const code = e.code.replace(/^(Key|Digit)/, '')
+      if (keyTable.includes(code)) {
+        setValidKey(true)
+        setKeyGrabbed(code)
+      } else {
+        setValidKey(false)
+        setKeyGrabbed('')
+      }
+      e.preventDefault()
     }
-    e.preventDefault()
-  }
+  }, [])
 
   useEffect(() => {
     if (keyGrab) {
       ref.current?.focus()
-      window.addEventListener('keydown', keyGrabListener)
+      window.addEventListener('keydown', listener)
     } else {
-      window.removeEventListener('keydown', keyGrabListener)
+      window.removeEventListener('keydown', listener)
     }
   }, [keyGrab])
 
