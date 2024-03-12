@@ -1,8 +1,9 @@
-import { Button, Container, Nav, Navbar } from 'react-bootstrap'
-import { createRef, JSX, RefObject, useEffect, useState } from 'react'
-import Editor from './Editor'
-import Index from './Index'
+import { Button, Container, Nav, Navbar, Spinner } from 'react-bootstrap'
+import { createRef, JSX, RefObject, useEffect, useMemo, useState } from 'react'
 import { FiletypeJson, Floppy } from 'react-bootstrap-icons'
+import { ConfigResponse } from '../../shared/Config'
+import { Recent } from './Recent'
+import { ConfigContainer } from './ConfigContainer'
 
 //@ts-ignore correct type
 const styles: Record<string, () => Promise<{ default: string }>> = import.meta.glob('./assets/theme-*.scss', {
@@ -13,15 +14,27 @@ const styleElement = document.createElement('style')
 document.head.appendChild(styleElement)
 
 async function loadStyle(name: string): Promise<void> {
-  console.log('LOADING')
   const { default: style } = await styles[`./assets/theme-${name}.scss`]()
   styleElement.textContent = style
-  console.log('LOADED')
 }
 
 function App(): JSX.Element {
-  const formRef: RefObject<HTMLFormElement> = createRef()
   const [theme, setTheme] = useState('dark')
+  const [loading, setLoading] = useState(false)
+  const formRef: RefObject<HTMLFormElement> = createRef()
+  const [config, setConfig] = useState<ConfigResponse>()
+  const [key, setKey] = useState(new Date().getTime())
+
+  useEffect(() => {
+    return window.api.onConfig((config): void => {
+      setLoading(true)
+      setKey(new Date().getTime())
+      setTimeout(() => {
+        setConfig(config)
+        setLoading(false)
+      }, 5)
+    })
+  }, [])
 
   function openFile(): void {
     window.api.openConfig()
@@ -31,10 +44,15 @@ function App(): JSX.Element {
     formRef.current?.requestSubmit()
   }
 
+  function changeStyle(theme: string): void {
+    setLoading(true)
+    loadStyle(theme).then(() => setLoading(false))
+  }
+
   useEffect(() => {
     window.api.getTheme().then((theme) => {
       setTheme(theme)
-      loadStyle(theme)
+      changeStyle(theme)
     })
     return window.api.onThemeChange((theme) => {
       document.body.setAttribute('data-bs-theme', theme)
@@ -44,12 +62,26 @@ function App(): JSX.Element {
 
   useEffect(() => {
     return window.api.onBootThemeChange((theme) => {
-      loadStyle(theme)
+      changeStyle(theme)
     })
   }, [])
 
+  const element = useMemo(
+    () => (!config ? <Recent /> : <ConfigContainer key={key} config={config} formRef={formRef} />),
+    [key, config]
+  )
+
   return (
     <>
+      {loading && (
+        <Container
+          fluid
+          className={'position-absolute d-flex align-items-center justify-content-center z-2 bg-body opacity-75'}
+          style={{ height: '100%' }}
+        >
+          <Spinner />
+        </Container>
+      )}
       <Navbar className={'bg-body-secondary shadow'} variant={theme}>
         <Container fluid={true}>
           <Navbar.Brand className="d-flex align-items-center justify-content-start py-0 opacity-75">
@@ -79,11 +111,7 @@ function App(): JSX.Element {
           </Nav>
         </Container>
       </Navbar>
-      <Container fluid={true} className={'d-flex config-container g-0 gap-1'}>
-        <Index />
-
-        <Editor formRef={formRef} />
-      </Container>
+      {element}
     </>
   )
 }

@@ -1,10 +1,9 @@
-import { createContext, createRef, FormEvent, JSX, RefObject, useEffect, useState } from 'react'
+import { createContext, createRef, FormEvent, JSX, RefObject } from 'react'
 import { Config, ConfigResponse, Value } from '../../shared/Config'
 import Item from './editor/Item'
-import { Container, Form } from 'react-bootstrap'
+import { Form } from 'react-bootstrap'
 import * as React from 'react'
 import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
-import { FiletypeJson } from 'react-bootstrap-icons'
 
 class ValueCollector {
   config: Config = {}
@@ -18,53 +17,12 @@ export const ConfigContext: React.Context<{ directory: string }> = createContext
 
 interface EditorProps {
   formRef: RefObject<HTMLFormElement>
+  config: ConfigResponse
 }
 
-function Editor({ formRef }: EditorProps): JSX.Element {
+function Editor({ formRef, config }: EditorProps): JSX.Element {
   const valueCollector = new ValueCollector()
   const ref: RefObject<HTMLDivElement> = createRef()
-  const [recent, setRecent] = useState([] as string[])
-  const [config, setConfig] = useState<ConfigResponse>()
-  const [key, setKey] = useState(new Date().getTime())
-
-  useEffect(() => {
-    return window.api.onConfig((config): void => {
-      setKey(new Date().getTime())
-      setConfig(config)
-    })
-  }, [])
-
-  useEffect(() => {
-    window.api.getRecent().then((recent) => {
-      setRecent(recent)
-    })
-  }, [])
-
-  if (!config) {
-    return (
-      <>
-        <Container className={'mt-4'}>
-          <h5>Ostatnio otwarte:</h5>
-          <hr/>
-          <ul className={'border-start border-1 ps-3 border-primary-subtle'} style={{ listStyleType: 'none' }}>
-            {recent.map((recent) => (
-              <li key={recent} className={'my-3'}>
-                <a
-                  className={'text-decoration-none'}
-                  onClick={() => window.api.openConfig(recent)}
-                  role={'button'}
-                  title={recent}
-                >
-                  <FiletypeJson className={'me-1'} />
-                  {recent.replace(/^.*[\\/]/, '')}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </>
-    )
-  }
 
   function onSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()
@@ -101,20 +59,18 @@ function Editor({ formRef }: EditorProps): JSX.Element {
 
   return (
     <ConfigContext.Provider value={config}>
-      <div className={'config p-4 border-start border-secondary-subtle shadow-sm'}>
-        <Form key={key} ref={formRef} onSubmit={(event) => onSubmit(event)}>
-          <div ref={ref} className={'d-flex gap-2 align-items-center'}>
-            <div>
-              <p className={'h3 m-0'}>{config.name}</p>
-              <p className={'m-0 small font-monospace text-muted'}>
-                <em>{config.path}</em>
-              </p>
-            </div>
+      <Form ref={formRef} onSubmit={(event) => onSubmit(event)}>
+        <div ref={ref} className={'d-flex gap-2 align-items-center'}>
+          <div>
+            <p className={'h3 m-0'}>{config.name}</p>
+            <p className={'m-0 small font-monospace text-muted'}>
+              <em>{config.path}</em>
+            </p>
           </div>
-          <hr className={'mt-1 mb-4'} />
-          {items}
-        </Form>
-      </div>
+        </div>
+        <hr className={'mt-1 mb-4'} />
+        {items}
+      </Form>
     </ConfigContext.Provider>
   )
 }

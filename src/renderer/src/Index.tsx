@@ -1,20 +1,19 @@
 import { JSX, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
+import { ConfigResponse } from '../../shared/Config'
 
-export default function Index(): JSX.Element {
+export default function Index({ config }: { config: ConfigResponse }): JSX.Element {
   const [keys, setKeys] = useState([] as string[])
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    return window.api.onConfig((config) => {
-      setKeys(
-        Array.from(config.fields.keys())
-          .map((field) => field)
-          .sort(function (a, b) {
-            return a.toLowerCase().localeCompare(b.toLowerCase())
-          })
-      )
-    })
+    setKeys(
+      Array.from(config.fields.keys())
+        .map((field) => field)
+        .sort(function (a, b) {
+          return a.toLowerCase().localeCompare(b.toLowerCase())
+        })
+    )
   }, [])
 
   const onFilterChange = useCallback(
@@ -27,7 +26,7 @@ export default function Index(): JSX.Element {
   }
 
   return (
-    <div className={'index p-4'}>
+    <>
       <Form.Group className={'mb-2'}>
         <Form.Control type={'text'} placeholder={'Filtruj...'} onInput={onFilterChange} />
       </Form.Group>
@@ -51,6 +50,6 @@ export default function Index(): JSX.Element {
             </li>
           ))}
       </ul>
-    </div>
+    </>
   )
 }

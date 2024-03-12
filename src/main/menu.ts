@@ -46,14 +46,8 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
           accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O'
         },
         {
-          label:"Open Recent",
-          role:"recentDocuments",
-          "submenu":[
-            {
-              label:"Clear Recent",
-              role:"clearRecentDocuments"
-            }
-          ]
+          label:"Ostatnio otwarte",
+
         },
         {
           type: 'separator'
