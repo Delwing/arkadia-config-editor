@@ -8,7 +8,7 @@ import {
   ModalHeader,
   ModalTitle
 } from 'react-bootstrap'
-import { createRef, JSX, RefObject, useEffect, useState } from 'react'
+import { createRef, JSX, MutableRefObject, RefObject, useEffect, useRef, useState } from 'react'
 import { InputProperties } from '../Components'
 
 import keys from '../../../../shared/mudlet_keys.json'
@@ -16,16 +16,15 @@ import Feedback from 'react-bootstrap/Feedback'
 
 const keyTable = Object.keys(keys)
 
-let listener
-
 export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.Element {
   const ref: RefObject<HTMLInputElement> = createRef()
+  const listenerRef: MutableRefObject<(ev: KeyboardEvent) => void> = useRef(() => {})
   const [keyGrab, setKeyGrab] = useState(false)
   const [keyGrabbed, setKeyGrabbed] = useState<string | undefined>(undefined)
   const [validKey, setValidKey] = useState(true)
 
   useEffect(() => {
-    listener = (e): void => {
+    listenerRef.current = (e): void => {
       const code = e.code.replace(/^(Key|Digit)/, '')
       if (keyTable.includes(code)) {
         setValidKey(true)
@@ -41,9 +40,9 @@ export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.
   useEffect(() => {
     if (keyGrab) {
       ref.current?.focus()
-      window.addEventListener('keydown', listener)
+      window.addEventListener('keydown', listenerRef.current)
     } else {
-      window.removeEventListener('keydown', listener)
+      window.removeEventListener('keydown', listenerRef.current)
     }
   }, [keyGrab])
 
@@ -57,6 +56,7 @@ export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.
         value={value as string}
         onChange={(e) => updateCallback(e.currentTarget.value)}
       />
+      <Button onClick={() => setKeyGrab(true)}>Pobierz klawisz</Button>
       <Feedback type={'invalid'}>
         Klawisz jest nieprawidłowy, lista klawiszy:&nbsp;
         <code>{keyTable.join(', ')}</code>
@@ -107,7 +107,6 @@ export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.
           </Button>
         </ModalFooter>
       </Modal>
-      <Button onClick={() => setKeyGrab(true)}>Pobierz klawisz</Button>
     </InputGroup>
   )
 }
