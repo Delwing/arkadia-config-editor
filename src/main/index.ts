@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, nativeTheme, Menu } from 'electron'
+import { app, shell, BrowserWindow, nativeTheme, screen, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -10,9 +10,11 @@ import './handlers/pick-file'
 import { registerSearchHandlersForWindow } from './handlers/search'
 
 function createWindow(): BrowserWindow {
+  const screenSize = screen.getPrimaryDisplay().bounds
+  const factor = 0.8
   const mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 800,
+    width: screenSize.width * factor,
+    height: screenSize.height * factor,
     show: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {

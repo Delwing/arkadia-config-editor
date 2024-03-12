@@ -8,6 +8,7 @@ import hljs from 'highlight.js'
 import { ConfigContext } from '../Editor'
 import { controller } from './Components'
 import { DefaultValue } from './DefaultValue'
+import { ArrowCounterclockwise } from 'react-bootstrap-icons'
 
 const converter = new showdown.Converter({
   omitExtraWLInCodeBlocks: false
@@ -26,11 +27,15 @@ export default function Item({ definition, description, value, collector }: Fiel
   const defaultsValueAsText = JSON.stringify(definition.default_value, null, 4).replace(/^"/, '').replace(/"$/, '')
 
   useEffect(() => {
-    collector(value)
+    if (value !== '' || !definition.implicit) {
+      collector(value)
+    }
   }, [])
 
   function updateValueAndCollect(_: Value, newState: Value): Value {
-    collector(newState)
+    if (newState !== '' || !definition.implicit) {
+      collector(newState)
+    }
     return newState
   }
 
@@ -45,7 +50,17 @@ export default function Item({ definition, description, value, collector }: Fiel
       <div data-schemapath={definition.name}>
         <FormGroup controlId={definition.name}>
           <FormLabel className={'d-flex mt-4 justify-content-between align-items-center'}>
-            <h5 className={'mb-0'}>{definition.name}</h5>
+            <h5 className={'mb-0 d-inline-flex justify-content-center align-items-center'}>
+              {definition.name}{' '}
+              {JSON.stringify(value) !== JSON.stringify(currentValue) && (
+                <ArrowCounterclockwise
+                  onClick={() => updateValue(value!)}
+                  role={'button'}
+                  className={'ms-3 text-muted'}
+                  size={15}
+                />
+              )}
+            </h5>
             <small>
               <Stack direction={'horizontal'} className={'me-1'} gap={1}>
                 <Badge pill bg={'secondary'}>
@@ -55,16 +70,18 @@ export default function Item({ definition, description, value, collector }: Fiel
               </Stack>
             </small>
           </FormLabel>
-          {controller(
-            definition.field_type,
-            definition.content_type
-          )({
-            name: definition.name,
-            value: currentValue,
-            configPath: config.directory,
-            updateCallback: (value: Value) => updateValue(value),
-            definition: definition
-          })}
+          <div className={'position-relative'}>
+            {controller(
+              definition.field_type,
+              definition.content_type
+            )({
+              name: definition.name,
+              value: currentValue,
+              configPath: config.directory,
+              updateCallback: (value: Value) => updateValue(value),
+              definition: definition
+            })}
+          </div>
           <FormText className={'d-block description'}>
             {description && (
               <div

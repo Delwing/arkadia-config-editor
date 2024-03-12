@@ -8,7 +8,6 @@ import path from 'path'
 let currentTheme = settings.getSync('theme.bootstrap') ?? 'sandstone'
 
 export default function createMenu(mainWindow: BrowserWindow): Menu {
-
   const themes = fs
     .readdirSync(path.resolve(__dirname, '../renderer/assets'))
     .filter((file) => file.match('theme'))
@@ -34,20 +33,19 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
         {
           label: 'Zapisz',
           click: function (): void {
-            mainWindow.webContents.send('save')
+            //ipcMain.emit('save')
           },
           accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S'
         },
         {
           label: 'Otwórz',
           click: function (): void {
-            mainWindow.webContents.send('open')
+            ipcMain.emit('open')
           },
           accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O'
         },
         {
-          label:"Ostatnio otwarte",
-
+          label: 'Ostatnio otwarte'
         },
         {
           type: 'separator'
@@ -69,22 +67,22 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
           }
         },
         {
-          role: "selectAll"
+          role: 'selectAll'
         },
         {
-          role: "undo"
+          role: 'undo'
         },
         {
-          role: "redo"
+          role: 'redo'
         },
         {
-          role: "copy"
+          role: 'copy'
         },
         {
-          role: "paste"
+          role: 'paste'
         },
         {
-          role: "cut"
+          role: 'cut'
         }
       ]
     },

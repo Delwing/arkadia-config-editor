@@ -6,7 +6,7 @@ import { InputProperties } from '../Components'
 import { Value } from '../../../../shared/Config'
 
 export function TextAreaInput({ name, value, updateCallback, definition }: InputProperties): JSX.Element {
-  let formattedValue = JSON.stringify(value, null, 4)
+  let formattedValue = JSON.stringify(value ?? {}, null, 4)
   if (formattedValue === '[]' && definition?.field_type === 'map') {
     formattedValue = '{}'
   }
@@ -17,8 +17,8 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
   const [validationErrors, setValidationErrors] = useState<string>()
 
   useEffect(() => {
-    if (JSON.stringify(value).trim() !== textValue.replaceAll(/\s/g, '').trim()) {
-      setTextValue(JSON.stringify(value, null, 4))
+    if (JSON.stringify(value ?? {}).trim() !== textValue.replaceAll(/\s/g, '').trim()) {
+      setTextValue(JSON.stringify(value ?? {}, null, 4))
     }
   }, [value])
 

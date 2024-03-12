@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { ConfigResponse } from '../shared/Config'
+import { Config, ConfigResponse } from '../shared/Config'
 
 type ConfigCallback = (config: ConfigResponse) => void
 
@@ -8,6 +8,8 @@ export interface CfgApi {
   onConfig(callback: ConfigCallback): () => void
 
   openConfig(recentFile?: string): void
+
+  saveConfig(file: string, config: Config): Promise<void>
 
   onThemeChange(callback: (theme: 'dark' | 'light') => void): () => void
 
@@ -24,7 +26,9 @@ export interface CfgApi {
   clearSearch(): Promise<void>
 
   stopSearch(): Promise<void>
+
   searchNext(): Promise<void>
+
   searchPrev(): Promise<void>
 
   listenToSearch(callback: (result: Electron.Result) => void): () => void
@@ -50,6 +54,9 @@ const api: CfgApi = {
   },
   openConfig: (filePath) => {
     ipcRenderer.send('open', filePath)
+  },
+  saveConfig(file: string, config: Config): Promise<void> {
+    return ipcRenderer.invoke('save', file, config)
   },
   onThemeChange: (callback) => wrap('theme', callback),
   onBootThemeChange: (callback) => wrap('theme:bootstrap', callback),

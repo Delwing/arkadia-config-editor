@@ -1,9 +1,12 @@
-import { createContext, createRef, FormEvent, JSX, RefObject } from 'react'
+import { createContext, createRef, FormEvent, JSX, RefObject, useContext } from 'react'
 import { Config, ConfigResponse, Value } from '../../shared/Config'
 import Item from './editor/Item'
-import { Form } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 import * as React from 'react'
 import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
+import { NotificationContext } from './NotificationCenter'
+import { Floppy } from 'react-bootstrap-icons'
+import { createPortal } from 'react-dom'
 
 class ValueCollector {
   config: Config = {}
@@ -16,13 +19,15 @@ class ValueCollector {
 export const ConfigContext: React.Context<{ directory: string }> = createContext({ directory: '' })
 
 interface EditorProps {
-  formRef: RefObject<HTMLFormElement>
   config: ConfigResponse
 }
 
-function Editor({ formRef, config }: EditorProps): JSX.Element {
+function Editor({ config }: EditorProps): JSX.Element {
+  const formRef: RefObject<HTMLFormElement> = createRef()
   const valueCollector = new ValueCollector()
+
   const ref: RefObject<HTMLDivElement> = createRef()
+  const notificationService = useContext(NotificationContext)
 
   function onSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()
@@ -32,15 +37,18 @@ function Editor({ formRef, config }: EditorProps): JSX.Element {
       return
     }
 
-    for (const configKey in valueCollector.config) {
-      console.log(configKey, valueCollector.config[configKey])
-    }
+    window.api.saveConfig(config.path, valueCollector.config).then(() => {
+      notificationService?.current?.addNotification({
+        header: 'Zapisano konfiguracje',
+        message: `Zapisano ${Object.keys(valueCollector.config).length} kluczy\n${config.path}`
+      })
+    })
   }
 
   const items: JSX.Element[] = Array.from(config.fields.entries()).map(([key, field]) =>
     field.definition ? (
       <Item
-        key={key}
+        key={key + String(field.value)}
         definition={field.definition!}
         description={field.description}
         value={field.value}
@@ -48,7 +56,7 @@ function Editor({ formRef, config }: EditorProps): JSX.Element {
       />
     ) : (
       <ItemWithoutDefinition
-        key={key}
+        key={key + String(field.value)}
         name={key}
         configPath={config.path}
         value={field.value!}
@@ -70,6 +78,12 @@ function Editor({ formRef, config }: EditorProps): JSX.Element {
         </div>
         <hr className={'mt-1 mb-4'} />
         {items}
+        {createPortal(
+          <Button className={'shadow'} disabled={!config} onClick={() => formRef.current?.requestSubmit()}>
+            <Floppy className={'me-1'} /> Zapisz
+          </Button>,
+          document.body.querySelector('.control-buttons')!
+        )}
       </Form>
     </ConfigContext.Provider>
   )

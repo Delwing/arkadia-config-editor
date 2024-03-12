@@ -14,7 +14,7 @@ export function CheckBoxInput(options: string[]) {
               key={label}
               id={`${name}.${label}`}
               label={label}
-              checked={current.includes(label)}
+              checked={current?.includes(label)}
               value={label}
               onChange={(e) =>
                 updateCallback(
