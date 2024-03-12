@@ -6,7 +6,7 @@ export interface ConfigResponse {
 }
 
 export type FieldType = 'string' | 'boolean' | 'list' | 'map' | 'number'
-export type ContentType = 'mudlet_color' | 'key_modifiers' | 'file_path' | 'password'
+export type ContentType = 'mudlet_color' | 'key_modifiers' | 'file_path' | 'password' | 'keybind'
 
 export interface FieldDefinition {
   name: string

@@ -9,6 +9,8 @@ import { CheckBoxInput } from './components/CheckBoxInput'
 import { TextAreaInput } from './components/TextAreaInput'
 
 import keyModifiers from '../../../shared/mudlet_key_modifiers.json'
+import { KeyInput } from './components/KeyInput'
+import { PasswordInput } from './components/PasswordInput'
 
 export interface InputProperties {
   name: string
@@ -30,8 +32,12 @@ export function controller(fieldType: FieldType, contentType?: ContentType): (ar
           return ColorSelect
         case 'file_path':
           return FileInput
+        case 'keybind':
+          return KeyInput
+        case 'password':
+          return PasswordInput
         default:
-          return DefaultInput
+          return PasswordInput
       }
     case 'list':
     case 'map':
