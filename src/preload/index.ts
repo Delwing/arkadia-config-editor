@@ -16,7 +16,7 @@ export interface CfgApi {
   onThemeChange(callback: (theme: 'dark' | 'light') => void): () => void
   onBootThemeChange(callback: (theme: string) => void): () => void
 
-  getTheme(): Promise<string>
+  getTheme(): Promise<{ theme: string; isDark: boolean }>
 
   getRecent(): Promise<string[]>
 
@@ -62,7 +62,7 @@ const api: CfgApi = {
   },
   onThemeChange: (callback) => wrap('theme', callback),
   onBootThemeChange: (callback) => wrap('theme:bootstrap', callback),
-  getTheme: () => ipcRenderer.invoke('theme:bootstrap'),
+  getTheme: () => ipcRenderer.invoke('theme'),
   getRecent: () => ipcRenderer.invoke('app:recentDocuments'),
   getFilePath: (context: string, extensions?: string[]): Promise<string> =>
     ipcRenderer.invoke('app:file-pick', context, extensions),

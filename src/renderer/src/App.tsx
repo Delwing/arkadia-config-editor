@@ -46,13 +46,18 @@ function App(): JSX.Element {
     loadStyle(theme).then(() => setLoading(false))
   }
 
+  function changeTheme(theme: string): void {
+    document.body.setAttribute('data-bs-theme', theme)
+    setTheme(theme)
+  }
+
   useEffect(() => {
     window.api.getTheme().then((theme) => {
-      changeStyle(theme)
+      changeStyle(theme.theme)
+      changeTheme(theme.isDark ? 'dark' : 'light')
     })
     return window.api.onThemeChange((theme) => {
-      document.body.setAttribute('data-bs-theme', theme)
-      setTheme(theme)
+      changeTheme(theme)
     })
   }, [])
 

@@ -1,5 +1,5 @@
 import { app, shell, BrowserWindow, nativeTheme, screen, Menu } from 'electron'
-import { join } from 'path'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import createMenu from './menu'
@@ -8,6 +8,7 @@ import './handlers/theme-handlers'
 import './handlers/recent-documents'
 import './handlers/pick-file'
 import { registerSearchHandlersForWindow } from './handlers/search'
+import settings from 'electron-settings'
 
 function createWindow(): BrowserWindow {
   const screenSize = screen.getPrimaryDisplay().bounds
@@ -41,6 +42,8 @@ function createWindow(): BrowserWindow {
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('pl.nullpointer.arkadia-cfg-editor')
 
+  nativeTheme.themeSource = (settings.getSync('themeSource') as 'system' | 'light' | 'dark') ?? 'system'
+
   const mainWindow = createWindow()
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -56,6 +59,10 @@ app.whenReady().then(() => {
 
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.setTitle(`Arkadia Config Editor ${app.getVersion()}`)
+
+    if (process.argv[2] !== undefined && process.argv[3] !== undefined) {
+      loadConfig(mainWindow.webContents, path.join(process.argv[2], process.argv[3] + '.json'))
+    }
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -66,13 +73,13 @@ app.whenReady().then(() => {
 
   nativeTheme.on('updated', () => {
     mainWindow.webContents.send('theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
+    settings.set('themeSource', nativeTheme.themeSource)
   })
 
   app.on('open-file', (_, path) => {
     loadConfig(mainWindow.webContents, path)
   })
 })
-
 app.on('window-all-closed', () => {
   // if (process.platform !== 'darwin') {
   //   app.quit()

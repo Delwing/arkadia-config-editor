@@ -1,6 +1,9 @@
 import settings from 'electron-settings'
-import { ipcMain } from 'electron'
+import { ipcMain, nativeTheme } from 'electron'
 
-ipcMain.handle('theme:bootstrap', () => {
-  return settings.getSync('theme.bootstrap') ?? 'sandstone'
+ipcMain.handle('theme', () => {
+  return {
+    theme: settings.getSync('theme.bootstrap') ?? 'sandstone',
+    isDark: nativeTheme.shouldUseDarkColors
+  }
 })
