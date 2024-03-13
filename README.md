@@ -1,26 +1,29 @@
-# arkadia-config-editor-vite
+# arkadia-config-editor
+
+Przejdź do strony wtyczki https://github.com/Delwing/arkadia-cfg-editor
+
+---
+
+## Development
 
 An Electron application with React and TypeScript
 
-## Recommended IDE Setup
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+### Project Setup
 
-## Project Setup
-
-### Install
+#### Install
 
 ```bash
 $ yarn
 ```
 
-### Development
+#### Development
 
 ```bash
 $ yarn dev
 ```
 
-### Build
+#### Build
 
 ```bash
 # For windows
