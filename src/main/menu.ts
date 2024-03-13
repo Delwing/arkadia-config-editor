@@ -33,7 +33,7 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
         {
           label: 'Zapisz',
           click: function (): void {
-            //ipcMain.emit('save')
+            mainWindow.webContents.send('save')
           },
           accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S'
         },
@@ -43,9 +43,6 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
             ipcMain.emit('open')
           },
           accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O'
-        },
-        {
-          label: 'Ostatnio otwarte'
         },
         {
           type: 'separator'

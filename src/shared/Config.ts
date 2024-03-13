@@ -3,6 +3,7 @@ export interface ConfigResponse {
   directory: string
   path: string
   fields: Map<string, Field>
+  hasLoadingTrigger: boolean
 }
 
 export type FieldType = 'string' | 'boolean' | 'list' | 'map' | 'number'

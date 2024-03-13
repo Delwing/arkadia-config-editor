@@ -11,8 +11,9 @@ export interface CfgApi {
 
   saveConfig(file: string, config: Config): Promise<void>
 
-  onThemeChange(callback: (theme: 'dark' | 'light') => void): () => void
+  onRequestSave(callback: () => void): () => void
 
+  onThemeChange(callback: (theme: 'dark' | 'light') => void): () => void
   onBootThemeChange(callback: (theme: string) => void): () => void
 
   getTheme(): Promise<string>
@@ -55,6 +56,7 @@ const api: CfgApi = {
   openConfig: (filePath) => {
     ipcRenderer.send('open', filePath)
   },
+  onRequestSave: (callback) => wrap('save', callback),
   saveConfig(file: string, config: Config): Promise<void> {
     return ipcRenderer.invoke('save', file, config)
   },

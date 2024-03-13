@@ -55,6 +55,7 @@ export function ColorSelect({ name, value, updateCallback }: InputProperties): J
           className={'me-2 h-auto'}
           value={'#' + convert.rgb.hex(colors[value as string] ?? 'black')}
           onChange={(e) => updateCallback(findClosestColor(...convert.hex.rgb(e.currentTarget.value)))}
+          title={"Wybierz kolor"}
         />
         <Select
           className={'w-100'}
