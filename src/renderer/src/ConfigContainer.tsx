@@ -44,6 +44,17 @@ export function ConfigContainer({ loadKey, config }: { loadKey: number; config: 
             <ExclamationCircle className={'me-2'} /> Wydaje się, że załadowany plik nie jest plikiem konfiguracjnym.
           </Alert>
         )}
+        {configKeysSize > 0 && !config.hasLoadingTrigger && (
+          <Alert variant={'danger'}>
+            <div  className={'d-flex align-items-center'}>
+            <ExclamationCircle className={'me-2'} />
+            Plik nie jest ładowany automatycznie.
+            </div>
+            <div className={'mt-1'}>
+            Możesz utworzyć trigger ładujący wpisując w Mudlecie <code>/cinit imie imie_wolacz</code>
+            </div>
+          </Alert>
+        )}
         {editor}
         {showing && (
           <Button

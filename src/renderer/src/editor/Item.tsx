@@ -61,6 +61,7 @@ export default function Item({ definition, description, value, collector }: Fiel
                   role={'button'}
                   className={'ms-3 text-muted'}
                   size={15}
+                  title={"Cofnij"}
                 />
               )}
             </h5>

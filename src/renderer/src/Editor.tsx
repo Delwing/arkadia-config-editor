@@ -1,4 +1,4 @@
-import { createContext, createRef, FormEvent, JSX, RefObject, useContext } from 'react'
+import { createContext, createRef, FormEvent, JSX, RefObject, useContext, useEffect } from 'react'
 import { Config, ConfigResponse, Value } from '../../shared/Config'
 import Item from './editor/Item'
 import { Button, Form } from 'react-bootstrap'
@@ -28,6 +28,10 @@ function Editor({ config }: EditorProps): JSX.Element {
 
   const ref: RefObject<HTMLDivElement> = createRef()
   const notificationService = useContext(NotificationContext)
+
+  useEffect(() => {
+    return window.api.onRequestSave(() => formRef.current?.requestSubmit())
+  }, [])
 
   function onSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()
