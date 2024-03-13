@@ -27,7 +27,6 @@ export const NotificationCenter = forwardRef<NotificationService, ToastContainer
       () => ({
         addNotification(notification: Notification): void {
           notification.id = notification.id ?? new Date().getTime() + Math.random()
-          console.log(notifications)
           setNotifications(notifications.concat([notification]))
         }
       }),

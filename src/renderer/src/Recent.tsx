@@ -22,7 +22,7 @@ export const Recent = (): JSX.Element => {
             key={recent}
             onClick={() => window.api.openConfig(recent)}
             role={'button'}
-            className={'bg-transparent border-secondary'}
+            className={'bg-transparent border-secondary-subtle'}
           >
             <Card.Header>
               <FiletypeJson className={'me-1'} />

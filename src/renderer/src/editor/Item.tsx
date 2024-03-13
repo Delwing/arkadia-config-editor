@@ -54,7 +54,10 @@ export default function Item({ definition, description, value, collector }: Fiel
               {definition.name}{' '}
               {JSON.stringify(value) !== JSON.stringify(currentValue) && (
                 <ArrowCounterclockwise
-                  onClick={() => updateValue(value!)}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    updateValue(value!)
+                  }}
                   role={'button'}
                   className={'ms-3 text-muted'}
                   size={15}

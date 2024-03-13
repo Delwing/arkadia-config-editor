@@ -48,7 +48,6 @@ function App(): JSX.Element {
 
   useEffect(() => {
     window.api.getTheme().then((theme) => {
-      setTheme(theme)
       changeStyle(theme)
     })
     return window.api.onThemeChange((theme) => {
@@ -94,11 +93,11 @@ function App(): JSX.Element {
                   fill="#f00"
                 ></path>
               </svg>
-              <h5 className={'d-inline-flex align-items-center align-content-center text-center mx-0 my-0 mt-1'}>
+              <small className={'d-inline-flex align-items-center align-content-center text-center mx-0 my-0 mt-1'}>
                 Edytor
                 <br />
                 &nbsp;konfiguracji
-              </h5>
+              </small>
             </Navbar.Brand>
             <Nav className={'gap-3 me-2 control-buttons'}>
               <Button className={'shadow'} onClick={() => openFile()}>
