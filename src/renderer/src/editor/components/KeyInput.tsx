@@ -49,7 +49,7 @@ export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.
   return (
     <InputGroup hasValidation>
       <FormControl
-        isInvalid={!keyTable.includes(value as string)}
+        isInvalid={!keyTable.includes(value as string) && value !== undefined && value !== '' && value !== undefined}
         spellCheck={false}
         name={name}
         type={'text'}
