@@ -1,5 +1,5 @@
 {
-  "name": "arkadia-config-editor",
+  "name": "arkadia-cfg-editor",
   "version": "2.0.0",
   "description": "Edytor konfiguracji",
   "main": "./out/main/index.js",
