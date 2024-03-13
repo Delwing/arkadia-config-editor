@@ -66,7 +66,11 @@ export default function Item({ definition, description, value, collector }: Fiel
                 <Badge pill bg={'secondary'}>
                   {definition.field_type}
                 </Badge>
-                {definition.content_type && <Badge bg={'secondary'}>{definition.content_type}</Badge>}
+                {definition.content_type && (
+                  <Badge pill bg={'secondary'}>
+                    {definition.content_type}
+                  </Badge>
+                )}
               </Stack>
             </small>
           </FormLabel>

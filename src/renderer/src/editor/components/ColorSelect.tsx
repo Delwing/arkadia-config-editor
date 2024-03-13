@@ -3,6 +3,7 @@ import Select, { CSSObjectWithLabel } from 'react-select'
 import colors from '../../../../shared/colors.json'
 import { InputProperties } from '../Components'
 import mudletColors from '../../../../shared/mudlet_colors.json'
+import { ColorSamples } from './ColorSamples'
 
 const dot = (color: number[]): CSSObjectWithLabel => ({
   alignItems: 'center',
@@ -26,6 +27,7 @@ export function ColorSelect({ name, value, updateCallback }: InputProperties): J
     color: number[]
   }[]
   const defaultValue = options.filter((el) => el.value == value)[0]
+
   return (
     <>
       <Select
@@ -48,8 +50,7 @@ export function ColorSelect({ name, value, updateCallback }: InputProperties): J
           option: (styles, { data }) => ({ ...styles, ...dot(data.color) })
         }}
       />
-      <div>Sample</div>
-      <div>Sample</div>
+      <ColorSamples colorName={value as string} />
     </>
   )
 }
