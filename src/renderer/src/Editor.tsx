@@ -1,4 +1,4 @@
-import { createContext, createRef, FormEvent, JSX, RefObject, useContext, useEffect } from 'react'
+import { createContext, createRef, FormEvent, JSX, RefObject, useContext, useEffect, useRef } from 'react'
 import { Config, ConfigResponse, Value } from '../../shared/Config'
 import Item from './editor/Item'
 import { Button, Form } from 'react-bootstrap'
@@ -24,7 +24,7 @@ interface EditorProps {
 
 function Editor({ config }: EditorProps): JSX.Element {
   const formRef: RefObject<HTMLFormElement> = createRef()
-  const valueCollector = new ValueCollector()
+  const valueCollector = useRef(new ValueCollector())
 
   const ref: RefObject<HTMLDivElement> = createRef()
   const notificationService = useContext(NotificationContext)
@@ -41,10 +41,10 @@ function Editor({ config }: EditorProps): JSX.Element {
       return
     }
 
-    window.api.saveConfig(config.path, valueCollector.config).then(() => {
+    window.api.saveConfig(config.path, valueCollector.current.config).then(() => {
       notificationService?.current?.addNotification({
         header: 'Zapisano konfiguracje',
-        message: `Zapisano ${Object.keys(valueCollector.config).length} kluczy\n${config.path}`
+        message: `Zapisano ${Object.keys(valueCollector.current.config).length} kluczy\n${config.path}`
       })
     })
   }
@@ -56,7 +56,7 @@ function Editor({ config }: EditorProps): JSX.Element {
         definition={field.definition!}
         description={field.description}
         value={field.value}
-        collector={(value?: Value) => valueCollector.set(key, value ?? '')}
+        collector={(value?: Value) => valueCollector.current.set(key, value ?? '')}
       />
     ) : (
       <ItemWithoutDefinition
@@ -64,7 +64,7 @@ function Editor({ config }: EditorProps): JSX.Element {
         name={key}
         configPath={config.path}
         value={field.value!}
-        collector={(value?: Value) => valueCollector.set(key, value ?? '')}
+        collector={(value?: Value) => valueCollector.current.set(key, value ?? '')}
       />
     )
   )
