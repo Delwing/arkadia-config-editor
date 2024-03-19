@@ -26,6 +26,12 @@ export function EnumSelect(items: Value[]) {
             menuList: () => 'form-control mt-1 p-0 z-2',
             option: (state) => `p-2 pointer ${state.isFocused ? 'bg-primary text-light' : ''}`
           }}
+          styles={{
+            control: (base) => ({
+              ...base,
+              minHeight: 'auto'
+            })
+          }}
         />
       </>
     )
