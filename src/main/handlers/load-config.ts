@@ -40,8 +40,8 @@ export function loadConfig(target: WebContents, path: string): void {
     settings.get('app:recentDocuments').then((recent) => {
       settings.set(
         'app:recentDocuments',
-        [...((recent as [string[]]) ?? [])]
-          .concat([path])
+        [path]
+          .concat((recent as string[]) ?? [])
           .filter((value, index, array) => array.indexOf(value) === index)
           .slice(0, 5)
       )

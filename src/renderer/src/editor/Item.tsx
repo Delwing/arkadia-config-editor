@@ -27,9 +27,7 @@ export default function Item({ definition, description, value, collector }: Fiel
   const defaultsValueAsText = JSON.stringify(definition.default_value, null, 4).replace(/^"/, '').replace(/"$/, '')
 
   useEffect(() => {
-    if (value !== '' || !definition.implicit) {
-      collector(value)
-    }
+    collector(value)
   }, [])
 
   useEffect(() => {
@@ -37,9 +35,7 @@ export default function Item({ definition, description, value, collector }: Fiel
   }, [])
 
   function updateValueAndCollect(_: Value, newState: Value): Value {
-    if (newState !== '' || !definition.implicit) {
-      collector(newState)
-    }
+    collector(newState)
     return newState
   }
 
@@ -61,7 +57,7 @@ export default function Item({ definition, description, value, collector }: Fiel
                   role={'button'}
                   className={'ms-3 text-muted'}
                   size={15}
-                  title={"Cofnij"}
+                  title={'Cofnij'}
                 />
               )}
             </h5>
@@ -73,6 +69,11 @@ export default function Item({ definition, description, value, collector }: Fiel
                 {definition.content_type && (
                   <Badge pill bg={'secondary'}>
                     {definition.content_type}
+                  </Badge>
+                )}
+                {definition.implicit && (
+                  <Badge pill bg={'secondary'}>
+                    implicit
                   </Badge>
                 )}
               </Stack>

@@ -9,7 +9,7 @@ const mudletConfigPathSuffix: string = '/current'
 
 const characterNameField = 'scripts.character_name'
 
-const loadingFunction = (file: string) => `scripts_load_v2_config("${file}")`
+const loadingFunction = (file: string): string => `scripts_load_v2_config("${file}")`
 
 export class ConfigLoader {
   readonly configPath: string
@@ -181,15 +181,16 @@ export class ConfigLoader {
   }
 
   private async checkLoadingTrigger(): Promise<boolean> {
-    const configs = fs.readdirSync(path.join(this.directory, mudletConfigPathSuffix), { withFileTypes: true })
-      .filter(file => file.isFile())
-      .map(file => path.resolve(file.path, file.name))
-      .map(name => ({name, ctime: fs.statSync(name).ctime}))
+    const configs = fs
+      .readdirSync(path.join(this.directory, mudletConfigPathSuffix), { withFileTypes: true })
+      .filter((file) => file.isFile())
+      .map((file) => path.resolve(file.path, file.name))
+      .map((name) => ({ name, ctime: fs.statSync(name).ctime }))
       .sort((a, b) => b.ctime.getTime() - a.ctime.getTime())
     if (!configs[0]) {
-      return false;
+      return false
     }
-    const contents = fs.readFileSync(configs[0].name, {encoding: 'utf-8'})
+    const contents = fs.readFileSync(configs[0].name, { encoding: 'utf-8' })
     return contents.indexOf(loadingFunction(this.getNameFromPath())) > -1
   }
 

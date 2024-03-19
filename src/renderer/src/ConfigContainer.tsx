@@ -19,11 +19,16 @@ export function ConfigContainer({ loadKey, config }: { loadKey: number; config: 
       setShowing(true)
     })
     ref.current?.addEventListener('scrollend', (e) => {
-      const scrollTop = (e.currentTarget as HTMLDivElement)?.scrollTop
+      const target = (e.currentTarget as HTMLDivElement)
+      const scrollTop = target?.scrollTop
       timeout = setTimeout(() => setShowing(false), 3000)
       if (scrollTop == 0) {
         clearTimeout(timeout)
         setShowing(false)
+      }
+      if (scrollTop === (target.scrollHeight - target.clientHeight)) {
+        clearTimeout(timeout)
+        setShowing(true)
       }
     })
   }, [])

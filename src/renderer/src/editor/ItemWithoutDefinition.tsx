@@ -3,6 +3,7 @@ import { Badge, FormGroup, FormLabel, Row, Stack } from 'react-bootstrap'
 
 import { FieldType, Value } from '../../../shared/Config'
 import { controller } from './Components'
+import { Trash } from 'react-bootstrap-icons'
 
 function mapTypes(value: Value): FieldType {
   switch (typeof value) {
@@ -49,9 +50,19 @@ export default function ItemWithoutDefinition({
 
   const [currentValue, updateValue] = useReducer(updateValueAndCollect, value!)
   const [type, setType] = useState(mapTypes(value))
+  const [markedForDeletion, setMarkForDeletion] = useState(false)
+
+  function markForDeletion(): void {
+    setMarkForDeletion(!markedForDeletion)
+    if (!markedForDeletion) {
+      collector(undefined)
+    } else {
+      collector(currentValue)
+    }
+  }
 
   return (
-    <Row>
+    <Row className={markedForDeletion ? 'opacity-25' : ''}>
       <div data-schemapath={name}>
         <FormGroup controlId={name}>
           <FormLabel className={'d-flex mt-4 justify-content-between align-items-center'}>
@@ -69,6 +80,7 @@ export default function ItemWithoutDefinition({
                     {possibleType}
                   </Badge>
                 ))}
+                <Trash role={'button'} className={'ms-2'} onClick={() => markForDeletion()} />
               </Stack>
             </small>
           </FormLabel>

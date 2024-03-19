@@ -1,18 +1,30 @@
+import * as React from 'react'
 import { createContext, createRef, FormEvent, JSX, RefObject, useContext, useEffect, useRef } from 'react'
-import { Config, ConfigResponse, Value } from '../../shared/Config'
+import { Config, ConfigResponse, Field, Value } from '../../shared/Config'
 import Item from './editor/Item'
 import { Button, Form } from 'react-bootstrap'
-import * as React from 'react'
 import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
 import { NotificationContext } from './NotificationCenter'
 import { Floppy } from 'react-bootstrap-icons'
 import { createPortal } from 'react-dom'
 
 class ValueCollector {
+  readonly fields: Map<string, Field>
   config: Config = {}
 
-  set(key: string, value: Value): void {
-    this.config[key] = value
+  constructor(fields: Map<string, Field>) {
+    this.fields = fields
+  }
+
+  set(key: string, value?: Value): void {
+    this.config[key] = value ?? ''
+    if (
+      (this.fields.get(key)?.definition?.implicit &&
+        (value === this.fields.get(key)?.definition?.default_value || value == undefined)) ||
+      (!this.fields.get(key)?.definition && value === undefined)
+    ) {
+      delete this.config[key]
+    }
   }
 }
 
@@ -24,7 +36,7 @@ interface EditorProps {
 
 function Editor({ config }: EditorProps): JSX.Element {
   const formRef: RefObject<HTMLFormElement> = createRef()
-  const valueCollector = useRef(new ValueCollector())
+  const valueCollector = useRef(new ValueCollector(config.fields))
 
   const ref: RefObject<HTMLDivElement> = createRef()
   const notificationService = useContext(NotificationContext)
@@ -56,7 +68,7 @@ function Editor({ config }: EditorProps): JSX.Element {
         definition={field.definition!}
         description={field.description}
         value={field.value}
-        collector={(value?: Value) => valueCollector.current.set(key, value ?? '')}
+        collector={(value?: Value) => valueCollector.current.set(key, value)}
       />
     ) : (
       <ItemWithoutDefinition
@@ -64,7 +76,7 @@ function Editor({ config }: EditorProps): JSX.Element {
         name={key}
         configPath={config.path}
         value={field.value!}
-        collector={(value?: Value) => valueCollector.current.set(key, value ?? '')}
+        collector={(value?: Value) => valueCollector.current.set(key, value)}
       />
     )
   )
@@ -74,7 +86,7 @@ function Editor({ config }: EditorProps): JSX.Element {
       <Form ref={formRef} onSubmit={(event) => onSubmit(event)}>
         <div ref={ref} className={'d-flex gap-2 align-items-center'}>
           <div>
-            <p className={'h3 m-0'}>{config.name}</p>
+            <h3 className={'m-0'}>{config.name}</h3>
             <p className={'m-0 small font-monospace text-muted'}>
               <em>{config.path}</em>
             </p>
