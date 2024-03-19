@@ -5,7 +5,8 @@ import { FormControl, InputGroup } from 'react-bootstrap'
 import * as React from 'react'
 import { ChevronDown, ChevronUp, XLg } from 'react-bootstrap-icons'
 
-interface ResultsCount {
+interface Results {
+  requestId?: number
   activeMatchOrdinal: number
   matches: number
 }
@@ -13,7 +14,7 @@ interface ResultsCount {
 function SearchApp(): JSX.Element {
   const ref: React.RefObject<HTMLInputElement> = createRef()
 
-  function resultReducer(_: ResultsCount, newValue: ResultsCount): ResultsCount {
+  function resultReducer(_: Results, newValue: Results): Results {
     return newValue
   }
 
@@ -62,7 +63,7 @@ function SearchApp(): JSX.Element {
           onKeyDown={onFormControlKeyDown}
         />
         <small className={'d-inline-flex align-items-center position-absolute gap-2 text-muted'} style={{ right: '5px', zIndex: 999 }}>
-          {results.matches !== 0 && (
+          {results.requestId && (
             <>
               {results.activeMatchOrdinal}/{results.matches}
             </>

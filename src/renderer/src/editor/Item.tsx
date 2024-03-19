@@ -55,7 +55,7 @@ export default function Item({ definition, description, value, collector }: Fiel
                     updateValue(value!)
                   }}
                   role={'button'}
-                  className={'ms-3 text-muted'}
+                  className={'ms-3 mt-1 text-muted'}
                   size={15}
                   title={'Cofnij'}
                 />
