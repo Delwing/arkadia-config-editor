@@ -76,19 +76,23 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
     }
   }
 
+  const numberOfLines = textValue.split('\n').length
   return (
     <div className={"position-relative code-editor"}>
-       <pre className={"position-absolute"}>
-        <code ref={codeRef} className={"language-json"}>
+       <pre className={"position-absolute code-pane"}>
+         <code className={'line-numbers'}>
+            {Array.from({length: numberOfLines}, (_, i) => (i + 1) + "\n")}
+         </code>
+         <code ref={codeRef} className={"language-json"}>
           {textValue}
-        </code>
+         </code>
       </pre>
       <InputGroup>
         <FormControl
           isInvalid={validationErrors !== undefined}
           name={name}
           as={'textarea'}
-          rows={textValue.split('\n').length}
+          rows={numberOfLines}
           value={textValue}
           spellCheck={false}
           onKeyDown={onKeyDown}

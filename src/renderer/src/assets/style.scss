@@ -162,10 +162,21 @@ textarea {
 
 /* json editor */
 
+.code-pane {
+  display: flex;
+  flex-direction: row;
+}
+
+.code-editor .line-numbers {
+  width: 40px;
+  display: inline;
+  opacity: 0.4;
+}
+
 .code-editor pre {
     top: 0;
     left: 0;
-  }
+}
 
 .code-editor pre code {
   background: none;
@@ -174,6 +185,10 @@ textarea {
   padding: 0.375rem 0.75rem;
   font-weight: 400;
   line-height: 1.5;
+}
+
+.code-editor .input-group {
+  padding-left: 40px;
 }
 
 .code-editor textarea {
