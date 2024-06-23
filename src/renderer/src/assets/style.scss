@@ -167,7 +167,11 @@ textarea {
   flex-direction: row;
 }
 
-.code-editor .line-numbers {
+.line-numbers {
+  display: none;
+}
+
+.code-editor.with-lines .line-numbers {
   width: 40px;
   display: inline;
   opacity: 0.4;
@@ -181,13 +185,13 @@ textarea {
 .code-editor pre code {
   background: none;
   font-size: 0.8rem;
-  font-family: var(--bs-font-monospace);
+  font-family: var(--bs-font-monospace), monospace;
   padding: 0.375rem 0.75rem;
   font-weight: 400;
   line-height: 1.5;
 }
 
-.code-editor .input-group {
+.code-editor.with-lines .input-group {
   padding-left: 40px;
 }
 
@@ -195,7 +199,7 @@ textarea {
     background-color: rgba(1, 1, 1, 0) !important;
     color: rgba(255, 1, 1, 0) !important;
     caret-color: var(--bs-dark);
-    font-family: var(--bs-font-monospace);
+    font-family: var(--bs-font-monospace), monospace;
     font-size: 0.8rem;
   }
 
