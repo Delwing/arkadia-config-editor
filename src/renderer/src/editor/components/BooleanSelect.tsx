@@ -8,7 +8,9 @@ export function BooleanSelect({ name, value, updateCallback }: InputProperties):
       name={name}
       type={'switch'}
       checked={value as boolean}
-      onChange={(e) => updateCallback(e.currentTarget.value === 'true')}
+      onChange={(e) => {
+        return updateCallback(e.currentTarget.checked)
+      }}
     />
   )
 }
