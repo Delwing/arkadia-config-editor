@@ -14,7 +14,7 @@ export function FileInput({ name, configPath, value, updateCallback }: InputProp
       />
       <Button
         variant={'primary'}
-        onClick={() => window.api.getFilePath(configPath, ['wav', 'mp3']).then(updateCallback)}
+        onClick={() => window.api.getFilePath(configPath, ['wav', 'mp3']).then(newValue => newValue ?? value).then(updateCallback)}
       >
         Wybierz plik
       </Button>

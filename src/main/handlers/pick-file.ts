@@ -11,6 +11,9 @@ ipcMain.handle('app:file-pick', async (_, configPath: string, fileTypes: string[
         {name: "Wszystkie pliki", extensions: ['*']}
       ]
     })).filePaths[0];
+  if (!filePath) {
+    return;
+  }
   const relative = path.relative(configPath, filePath);
-  return !relative.startsWith("..") ? relative : filePath
+  return !relative.startsWith("..") ? relative : filePath;
 })
