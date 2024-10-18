@@ -9,7 +9,7 @@ export function NumberInput({ name, value, updateCallback }: InputProperties): J
       name={name}
       type={'number'}
       value={value as number}
-      onChange={(e) => updateCallback(e.currentTarget.value)}
+      onChange={(e) => updateCallback(parseFloat(e.currentTarget.value.replace(",", ".")))}
     />
   )
 }
