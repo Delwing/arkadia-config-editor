@@ -145,6 +145,9 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
         {
           label: 'Otwórz narzędzia developerskie',
           role: 'toggleDevTools'
+        },
+        {
+          role: "about"
         }
       ]
     }

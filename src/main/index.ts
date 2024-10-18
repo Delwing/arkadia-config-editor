@@ -10,6 +10,16 @@ import './handlers/pick-file'
 import { registerSearchHandlersForWindow } from './handlers/search'
 import settings from 'electron-settings'
 
+app.setAboutPanelOptions({
+  applicationName: "Arkadia Config Editor",
+  applicationVersion: app.getVersion(),
+  authors: [
+    "Dargoth"
+  ],
+  iconPath: "resources/icon.png",
+  credits: "Dargoth"
+})
+
 function createWindow(): BrowserWindow {
   const screenSize = screen.getPrimaryDisplay().bounds
   const factor = 0.8
