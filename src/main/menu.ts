@@ -1,5 +1,5 @@
 import settings from 'electron-settings'
-import { BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron'
+import { BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron'
 import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions
 
 import fs from 'fs'
@@ -145,6 +145,10 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
         {
           label: 'Otwórz narzędzia developerskie',
           role: 'toggleDevTools'
+        },
+        {
+            "label": "Github projektu",
+            click: () => shell.openExternal('https://github.com/Delwing/arkadia-config-editor')
         },
         {
           role: "about"

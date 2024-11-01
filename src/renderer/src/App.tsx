@@ -2,7 +2,7 @@ import { Button, Container, Nav, Navbar, Spinner } from 'react-bootstrap'
 import { createRef, JSX, RefObject, useEffect, useMemo, useState } from 'react'
 import { FiletypeJson } from 'react-bootstrap-icons'
 import { ConfigResponse } from '../../shared/Config'
-import { Recent } from './Recent'
+import { Dashboard } from './Dashboard'
 import { ConfigContainer } from './ConfigContainer'
 import { NotificationCenter, NotificationContext, NotificationService } from './NotificationCenter'
 
@@ -68,7 +68,7 @@ function App(): JSX.Element {
   }, [])
 
   const element = useMemo(
-    () => (!config ? <Recent /> : <ConfigContainer key={key} loadKey={key} config={config} />),
+    () => (!config ? <Dashboard /> : <ConfigContainer key={key} loadKey={key} config={config} />),
     [key, config]
   )
 
