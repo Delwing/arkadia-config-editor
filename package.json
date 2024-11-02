@@ -1,6 +1,6 @@
 {
   "name": "arkadia-cfg-editor",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "Edytor konfiguracji",
   "main": "./out/main/index.js",
   "author": "Delwing",
@@ -24,7 +24,6 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
-    "@types/color-convert": "^2.0.3",
     "bootstrap": "^5.3.3",
     "bootswatch": "^5.3.3",
     "color-convert": "^2.0.1",
@@ -39,6 +38,7 @@
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^1.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/color-convert": "^2.0.3",
     "@types/json-editor": "^0.0.10",
     "@types/node": "^18.19.9",
     "@types/react": "^18.2.48",

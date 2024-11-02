@@ -28,9 +28,18 @@ export class ConfigLoader {
       this.checkLoadingTrigger()
     ]).then(([schema, config, readme, hasLoadingTrigger]): ConfigResponse => {
       const fields = schema.fields.reduce((map, definition) => {
+        let value = config[definition.name]
+        if (value === undefined) {
+          if (definition.field_type === 'list') {
+            value = [];
+          }
+          if (definition.field_type === 'map') {
+            value = {} as Map<string, string | boolean | number>;
+          }
+        }
         map.set(definition.name, {
           definition: definition,
-          value: config[definition.name],
+          value: value,
           description: readme[definition.name]
         })
         return map

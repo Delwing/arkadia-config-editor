@@ -1,14 +1,25 @@
 import * as React from 'react'
-import { createContext, createRef, FormEvent, JSX, RefObject, useContext, useEffect, useRef } from 'react'
+import {
+  createContext,
+  createRef,
+  FormEvent,
+  JSX,
+  RefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { Config, ConfigResponse, Field, Value } from '../../shared/Config'
 import Item from './editor/Item'
-import { Button, Form } from 'react-bootstrap'
+import { Button, Form, Modal } from 'react-bootstrap'
 import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
 import { NotificationContext } from './NotificationCenter'
-import { Floppy } from 'react-bootstrap-icons'
+import { Floppy, Search } from 'react-bootstrap-icons'
 import { createPortal } from 'react-dom'
+import { Preview } from './Preview'
 
-class ValueCollector {
+export class ValueCollector {
   readonly fields: Map<string, Field>
   config: Config = {}
 
@@ -26,6 +37,10 @@ class ValueCollector {
       delete this.config[key]
     }
   }
+
+  get(key: string) {
+    return this.config[key]
+  }
 }
 
 export const ConfigContext: React.Context<{ directory: string }> = createContext({ directory: '' })
@@ -38,10 +53,13 @@ function Editor({ config }: EditorProps): JSX.Element {
   const formRef: RefObject<HTMLFormElement> = createRef()
   const valueCollector = useRef(new ValueCollector(config.fields))
 
-  const ref: RefObject<HTMLDivElement> = createRef()
   const notificationService = useContext(NotificationContext)
 
+  const [preview, setPreview] = useState(false)
+  const [previewJson, setPreviewJson] = useState('')
+
   useEffect(() => {
+    formRef.current?.parentElement?.scrollIntoView()
     return window.api.onRequestSave(() => formRef.current?.requestSubmit())
   }, [])
 
@@ -49,7 +67,7 @@ function Editor({ config }: EditorProps): JSX.Element {
     event.preventDefault()
     const invalid = event.currentTarget.querySelector('.form-control.is-invalid')
     if (invalid) {
-      invalid.parentElement?.parentElement?.scrollIntoView()
+      invalid.closest('.item')?.scrollIntoView()
       return
     }
 
@@ -68,6 +86,7 @@ function Editor({ config }: EditorProps): JSX.Element {
         definition={field.definition!}
         description={field.description}
         value={field.value}
+        newValue={valueCollector.current.get(key) ?? field.value}
         collector={(value?: Value) => valueCollector.current.set(key, value)}
       />
     ) : (
@@ -76,6 +95,7 @@ function Editor({ config }: EditorProps): JSX.Element {
         name={key}
         configPath={config.path}
         value={field.value!}
+        newValue={valueCollector.current.get(key) ?? field.value}
         collector={(value?: Value) => valueCollector.current.set(key, value)}
       />
     )
@@ -84,7 +104,7 @@ function Editor({ config }: EditorProps): JSX.Element {
   return (
     <ConfigContext.Provider value={config}>
       <Form ref={formRef} onSubmit={(event) => onSubmit(event)}>
-        <div ref={ref} className={'d-flex gap-2 align-items-center'}>
+        <div className={'d-flex gap-2 align-items-center'}>
           <div>
             <h3 className={'m-0'}>{config.name}</h3>
             <p className={'m-0 small font-monospace text-muted'}>
@@ -100,7 +120,28 @@ function Editor({ config }: EditorProps): JSX.Element {
           </Button>,
           document.body.querySelector('.control-buttons')!
         )}
+        {createPortal(
+          <Button className={'shadow'} disabled={!config} onClick={() => {
+            setPreviewJson(JSON.stringify(valueCollector.current.config, null, 4))
+            setPreview(!preview)
+          }
+          }>
+            <Search className={'me-1'} /> Podgląd
+          </Button>,
+          document.body.querySelector('.control-buttons')!
+        )}
       </Form>
+      <Modal size={"xl"} scrollable show={preview} onHide={() => setPreview(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Podgląd</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Preview value={previewJson} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className={'shadow'} onClick={() => setPreview(false)}>Zamknij</Button>
+        </Modal.Footer>
+      </Modal>
     </ConfigContext.Provider>
   )
 }

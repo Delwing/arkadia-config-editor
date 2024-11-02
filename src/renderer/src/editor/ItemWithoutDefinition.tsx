@@ -31,11 +31,13 @@ function mapPossibleTypes(value: Value): FieldType[] {
 export default function ItemWithoutDefinition({
   name,
   value,
+  newValue,
   configPath,
   collector
 }: {
   name: string
   value: Value
+  newValue: Value
   configPath: string
   collector: (value?: Value) => void
 }): JSX.Element {
@@ -48,7 +50,7 @@ export default function ItemWithoutDefinition({
     return newState
   }
 
-  const [currentValue, updateValue] = useReducer(updateValueAndCollect, value!)
+  const [currentValue, updateValue] = useReducer(updateValueAndCollect, newValue!)
   const [type, setType] = useState(mapTypes(value))
   const [markedForDeletion, setMarkForDeletion] = useState(false)
 
@@ -62,7 +64,7 @@ export default function ItemWithoutDefinition({
   }
 
   return (
-    <Row className={markedForDeletion ? 'opacity-25' : ''}>
+    <Row className={"item" + (markedForDeletion ? ' opacity-25' : '')}>
       <div data-schemapath={name}>
         <FormGroup controlId={name}>
           <FormLabel className={'d-flex mt-4 justify-content-between align-items-center'}>

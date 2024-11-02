@@ -17,11 +17,12 @@ const converter = new showdown.Converter({
 interface FieldWithDefinition {
   definition: FieldDefinition
   value?: Value
+  newValue?: Value
   description?: string
   collector: (value?: Value) => void
 }
 
-export default function Item({ definition, description, value, collector }: FieldWithDefinition): JSX.Element {
+export default function Item({ definition, description, value, newValue, collector }: FieldWithDefinition): JSX.Element {
   const descriptionRef: RefObject<HTMLDivElement> = createRef()
   const config = useContext(ConfigContext)
   const defaultsValueAsText = JSON.stringify(definition.default_value, null, 4).replace(/^"/, '').replace(/"$/, '')
@@ -39,10 +40,10 @@ export default function Item({ definition, description, value, collector }: Fiel
     return newState
   }
 
-  const [currentValue, updateValue] = useReducer(updateValueAndCollect, value!)
+  const [currentValue, updateValue] = useReducer(updateValueAndCollect, newValue!)
 
   return (
-    <Row>
+    <Row className="item">
       <div data-schemapath={definition.name}>
         <FormGroup controlId={definition.name}>
           <FormLabel className={'d-flex mt-4 justify-content-between align-items-center'}>
