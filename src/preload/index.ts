@@ -33,6 +33,8 @@ export interface CfgApi {
   searchPrev(): Promise<void>
 
   listenToSearch(callback: (result: Electron.Result) => void): () => void
+
+  onAbout(callback: (version: string) => void): () => void
 }
 
 //eslint-disable-next-line
@@ -66,6 +68,7 @@ const api: CfgApi = {
   getRecent: () => ipcRenderer.invoke('app:recentDocuments'),
   getFilePath: (context: string, extensions?: string[]): Promise<string> =>
     ipcRenderer.invoke('app:file-pick', context, extensions),
+  onAbout: (callback) => wrap("about", callback),
   search: (value: string) => ipcRenderer.invoke('app:search:start', value),
   clearSearch: () => ipcRenderer.invoke('app:search:clear'),
   stopSearch: () => ipcRenderer.invoke('app:search:stop'),

@@ -5,6 +5,7 @@ import { ConfigLoader } from '../config-loader'
 import WebContents = Electron.WebContents
 import { Config } from '../../shared/Config'
 import fs from 'fs'
+import { trackEvent } from '@aptabase/electron/main'
 
 ipcMain.on('open', async (event, fileToOpen) => {
   const filePath =
@@ -29,6 +30,7 @@ ipcMain.handle(
   'save',
   async (_, file: string, config: Config): Promise<void> =>
     new Promise((resolve) => {
+      trackEvent("save")
       fs.writeFile(file, JSON.stringify(config, null, 4), () => resolve())
     })
 )

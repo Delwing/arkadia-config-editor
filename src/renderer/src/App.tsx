@@ -5,6 +5,7 @@ import { ConfigResponse } from '../../shared/Config'
 import { Dashboard } from './Dashboard'
 import { ConfigContainer } from './ConfigContainer'
 import { NotificationCenter, NotificationContext, NotificationService } from './NotificationCenter'
+import { About } from './About'
 
 //@ts-ignore correct type
 const styles: Record<string, () => Promise<{ default: string }>> = import.meta.glob('./assets/theme-*.scss', {
@@ -113,6 +114,7 @@ function App(): JSX.Element {
         </Navbar>
         {element}
       </NotificationContext.Provider>
+      <About />
     </>
   )
 }

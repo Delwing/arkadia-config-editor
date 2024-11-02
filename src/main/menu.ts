@@ -1,9 +1,10 @@
 import settings from 'electron-settings'
-import { BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, nativeTheme, shell } from 'electron'
 import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions
 
 import fs from 'fs'
 import path from 'path'
+import { trackEvent } from '@aptabase/electron/main'
 
 let currentTheme = settings.getSync('theme.bootstrap') ?? 'sandstone'
 
@@ -19,6 +20,9 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
         type: 'radio',
         click: (): void => {
           currentTheme = theme
+          trackEvent("changeTheme", {
+            theme: theme
+          })
           mainWindow.webContents.send('theme:bootstrap', theme)
           settings.set('theme.bootstrap', theme)
         },
@@ -151,7 +155,8 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
             click: () => shell.openExternal('https://github.com/Delwing/arkadia-config-editor')
         },
         {
-          role: "about"
+          label: "O programie",
+          click: () => mainWindow.webContents.send("about", app.getVersion())
         }
       ]
     }
