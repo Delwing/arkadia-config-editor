@@ -33,7 +33,7 @@ export const NotificationCenter = forwardRef<NotificationService, ToastContainer
       [notifications]
     )
 
-    function removeNotification(id): void {
+    function removeNotification(id? : number): void {
       setNotifications(notifications.filter((notification) => notification.id !== id))
     }
 

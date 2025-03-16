@@ -50,6 +50,7 @@ export interface CfgApi {
 
   notifyAboutChanges(hasAnyChanges: boolean): void
 
+  onAbout(callback: (version: string) => void): () => void
 }
 
 //eslint-disable-next-line
@@ -95,6 +96,7 @@ const api: CfgApi = {
   getRecent: () => ipcRenderer.invoke('app:recentDocuments'),
   getFilePath: (context: string, extensions?: string[]): Promise<string> =>
     ipcRenderer.invoke('app:file-pick', context, extensions),
+  onAbout: (callback) => wrap("about", callback),
   notifyAboutChanges: (hasChanges: boolean) => {
     ipcRenderer.send('pendingChanges', hasChanges)
   },

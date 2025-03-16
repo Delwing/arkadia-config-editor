@@ -12,6 +12,8 @@ import './handlers/open-file'
 import './handlers/settings-handlers'
 import { registerSearchHandlersForWindow } from './handlers/search'
 import settings from 'electron-settings'
+import './analytics'
+import { trackEvent } from '@aptabase/electron/main'
 
 function createWindow(): BrowserWindow {
   const screenSize = screen.getPrimaryDisplay().bounds
@@ -44,6 +46,7 @@ function createWindow(): BrowserWindow {
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('pl.nullpointer.arkadia-cfg-editor')
+  trackEvent("startup")
 
   nativeTheme.themeSource = (settings.getSync('themeSource') as 'system' | 'light' | 'dark') ?? 'system'
 
