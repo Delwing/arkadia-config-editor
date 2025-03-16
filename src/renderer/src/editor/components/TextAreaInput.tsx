@@ -1,9 +1,7 @@
 import { FormControl, InputGroup } from 'react-bootstrap'
 import * as React from 'react'
 import { createRef, JSX, RefObject, useEffect, useLayoutEffect, useState } from 'react'
-import { validator } from '../Validators'
 import { InputProperties } from '../Components'
-import { Value } from '../../../../shared/Config'
 
 import hljs from 'highlight.js'
 import { useHljsStyle } from '@renderer/hooks/useHljsStyle'
@@ -38,7 +36,7 @@ function getLineNumberAndColumnIndex(textarea: HTMLTextAreaElement) {
   return [currentLineNumber, currentColumnIndex]
 }
 
-export function TextAreaInput({ name, value, updateCallback, definition }: InputProperties): JSX.Element {
+export function TextAreaInput({ name, value, updateCallback, definition, setValidationErrors = () => {} }: InputProperties): JSX.Element {
   let formattedValue = JSON.stringify(value ?? {}, null, 4)
   if (formattedValue === '[]' && definition?.field_type === 'map') {
     formattedValue = '{}'
@@ -47,7 +45,6 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
     formattedValue = '[]'
   }
   const [textValue, setTextValue] = useState(formattedValue)
-  const [validationErrors, setValidationErrors] = useState<string>()
   const codeRef: RefObject<HTMLDivElement> = createRef()
   const textAreaRef: RefObject<HTMLTextAreaElement> = createRef()
   const [lineNumber, setLineNumber] = useState(0)
@@ -63,12 +60,8 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
   }, [value])
 
   useEffect(() => {
-    setValidationErrors(undefined)
     try {
       const parsed = JSON.parse(textValue)
-      if (definition && (!isValid(parsed, definition.field_type) || !isValid(parsed, definition.content_type))) {
-        return
-      }
       updateCallback(parsed)
     } catch (e: unknown) {
       if (e instanceof SyntaxError) {
@@ -100,17 +93,6 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
     })
     return window.api.onWithLinesChange((value) => setWithLines(value))
   }, [])
-
-  function isValid(value: Value, type: string | undefined): boolean {
-    if (type && validator[type]) {
-      const errors = validator[type](value)
-      if (errors) {
-        setValidationErrors(errors)
-        return false
-      }
-    }
-    return true
-  }
 
   const onChange = (value: string): void => {
     setTextValue(value)
@@ -161,7 +143,6 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
         <InputGroup>
           <FormControl
             ref={textAreaRef}
-            isInvalid={validationErrors !== undefined}
             name={name}
             as={'textarea'}
             rows={numberOfLines}
@@ -175,7 +156,6 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
           />
         </InputGroup>
       </div>
-      <div className={'invalid-feedback d-block ms-1'}>{validationErrors}</div>
     </div>
   )
 }

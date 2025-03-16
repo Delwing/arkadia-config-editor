@@ -1,4 +1,4 @@
-import React, { createRef, JSX, RefObject, useContext, useEffect, useReducer } from 'react'
+import React, { createRef, JSX, RefObject, useContext, useEffect, useReducer, useState } from 'react'
 import { FieldDefinition, Value } from '../../../shared/Config'
 import { Badge, FormGroup, FormLabel, FormText, Row, Stack } from 'react-bootstrap'
 
@@ -10,6 +10,7 @@ import { controller } from './Components'
 import { DefaultValue } from './DefaultValue'
 import { ArrowCounterclockwise } from 'react-bootstrap-icons'
 import { useHljsStyle } from '@renderer/hooks/useHljsStyle'
+import { validator } from '@renderer/editor/Validators'
 
 const converter = new showdown.Converter({
   omitExtraWLInCodeBlocks: false
@@ -20,7 +21,7 @@ interface FieldWithDefinition {
   value?: Value
   description?: string
   collector: (value?: Value) => void
-  settings: Settings,
+  settings: Settings
   eventTarget: EventTarget
 }
 
@@ -35,7 +36,7 @@ export default function Item({
   const descriptionRef: RefObject<HTMLDivElement> = createRef()
   const config = useContext(ConfigContext)
   const defaultsValueAsText = JSON.stringify(definition.default_value, null, 4).replace(/^"/, '').replace(/"$/, '')
-
+  const [validationErrors, setValidationErrors] = useState<string>()
   const theme = useHljsStyle()
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export default function Item({
     descriptionRef.current?.querySelectorAll('pre').forEach((el) => {
       if (el instanceof HTMLElement) {
         el.setAttribute('data-hljs-theme', theme ?? '')
-        const code = el.querySelector("code")
+        const code = el.querySelector('code')
         if (code) {
           hljs.highlightElement(code)
         }
@@ -62,12 +63,20 @@ export default function Item({
   const [currentValue, updateValue] = useReducer(updateValueAndCollect, value!)
 
   useEffect(() => {
-    eventTarget.dispatchEvent(new FieldChangeEvent(definition.name, JSON.stringify(value) !== JSON.stringify(currentValue)))
+    setValidationErrors(undefined)
+    if (isValid(currentValue, definition.content_type) && isValid(currentValue, definition.field_type)) {
+      eventTarget.dispatchEvent(
+        new FieldChangeEvent(definition.name, JSON.stringify(value) !== JSON.stringify(currentValue))
+      )
+    }
   }, [currentValue])
 
   useEffect(() => {
-    descriptionRef?.current?.querySelectorAll('ul code').forEach(el => {
-      if (el.innerHTML == currentValue.toString() || Array.isArray(currentValue) && (currentValue as string[]).indexOf(el.innerHTML) > -1) {
+    descriptionRef?.current?.querySelectorAll('ul code').forEach((el) => {
+      if (
+        el.innerHTML == currentValue.toString() ||
+        (Array.isArray(currentValue) && (currentValue as string[]).indexOf(el.innerHTML) > -1)
+      ) {
         el.classList.add('text-decoration-dotted')
       } else {
         el.classList.remove('text-decoration-dotted')
@@ -75,14 +84,25 @@ export default function Item({
     })
   }, [currentValue])
 
+  function isValid(value: Value, type: string | undefined): boolean {
+    if (type && validator[type]) {
+      const errors = validator[type](value)
+      if (errors) {
+        setValidationErrors(errors)
+        return false
+      }
+    }
+    return true
+  }
+
   return (
     <Row>
-      <div data-schemapath={definition.name}>
+      <div data-schemapath={definition.name} className={'' + (validationErrors ? 'invalid-value' : '')}>
         <FormGroup controlId={definition.name}>
           <FormLabel className={'d-flex mt-4 justify-content-between align-items-center'}>
             <h5 className={'mb-0 d-inline-flex justify-content-center align-items-center'}>
               {definition.name}{' '}
-              {(JSON.stringify(value) !== JSON.stringify(currentValue)) && (
+              {JSON.stringify(value) !== JSON.stringify(currentValue) && (
                 <ArrowCounterclockwise
                   onClick={(e) => {
                     e.preventDefault()
@@ -117,11 +137,19 @@ export default function Item({
             {React.createElement(controller(definition.field_type, settings, definition.content_type), {
               key: definition.name,
               name: definition.name,
-              value: currentValue ?? "",
+              value: currentValue ?? '',
               configPath: config.directory,
               updateCallback: (value: Value) => updateValue(value),
-              definition: definition
+              definition: definition,
+              setValidationErrors: setValidationErrors
             })}
+            {validationErrors && (validationErrors?.indexOf('<code>') ? (
+              <div className={'invalid-feedback d-block ms-1'}
+                dangerouslySetInnerHTML={{__html: validationErrors}}>
+              </div>
+            ) : (
+              <div className={'invalid-feedback d-block ms-1'}>{validationErrors}</div>
+            ))}
           </div>
           <FormText className={'d-block description'}>
             {description && (

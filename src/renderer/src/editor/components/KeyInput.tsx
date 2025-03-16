@@ -51,9 +51,8 @@ export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.
   }, [keyGrab])
 
   return (
-    <InputGroup hasValidation>
+    <InputGroup>
       <FormControl
-        isInvalid={!keyTable.includes(value as string) && value !== undefined && value !== '' && value !== undefined}
         spellCheck={false}
         name={name}
         type={'text'}
@@ -61,10 +60,6 @@ export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.
         onChange={(e) => updateCallback(e.currentTarget.value)}
       />
       <Button onClick={() => setKeyGrab(true)}>Pobierz klawisz</Button>
-      <Feedback type={'invalid'}>
-        Klawisz jest nieprawidłowy, lista klawiszy:&nbsp;
-        <code>{keyTable.join(', ')}</code>
-      </Feedback>
       <Modal show={keyGrab}>
         <ModalHeader>
           <ModalTitle>Pobierz klawisz</ModalTitle>

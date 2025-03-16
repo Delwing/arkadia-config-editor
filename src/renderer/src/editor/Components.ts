@@ -21,6 +21,7 @@ export interface InputProperties {
   configPath: string
   updateCallback: (value: Value) => void
   definition?: FieldDefinition
+  setValidationErrors?: (error: string) => void
 }
 
 export function controller(fieldType: FieldType, settings: Settings, contentType?: ContentType): (arg: InputProperties) => JSX.Element {
@@ -43,7 +44,12 @@ export function controller(fieldType: FieldType, settings: Settings, contentType
           return DefaultInput
       }
     case 'list':
-      return settings.visualListChange ? VisualListInput : TextAreaInput
+      switch (contentType) {
+        case 'key_modifiers':
+          return CheckBoxInput(keyModifiers)
+        default:
+          return settings.visualListChange ? VisualListInput : TextAreaInput
+      }
     case 'map':
       switch (contentType) {
         case 'key_modifiers':

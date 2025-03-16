@@ -4,6 +4,8 @@ import { Badge, Card } from 'react-bootstrap'
 
 export const Release = ({ release }: { release: GithubRelease }): JSX.Element => {
 
+  const imageRegex = /!\[image]\((.*)\)/g
+
   return <Card className="mb-1">
       <Card.Body>
         <h6 className="pb-2">
@@ -12,7 +14,7 @@ export const Release = ({ release }: { release: GithubRelease }): JSX.Element =>
           </Badge>
           {release.name}
         </h6>
-        <div style={{whiteSpace: "pre"}} dangerouslySetInnerHTML={{ __html: release.body }}></div>
+        <div style={{whiteSpace: "pre"}} dangerouslySetInnerHTML={{ __html: release.body.replace(imageRegex, '').trim() }}></div>
       </Card.Body>
     </Card>
 

@@ -11,6 +11,7 @@ export interface Notification {
   id?: number
   header: string
   message: string
+  html?: boolean
   icon?: FunctionComponent<IconProps>
 }
 
@@ -33,7 +34,7 @@ export const NotificationCenter = forwardRef<NotificationService, ToastContainer
       [notifications]
     )
 
-    function removeNotification(id? : number): void {
+    function removeNotification(id?: number): void {
       setNotifications(notifications.filter((notification) => notification.id !== id))
     }
 
@@ -55,9 +56,11 @@ export const NotificationCenter = forwardRef<NotificationService, ToastContainer
               </ToastHeader>
               <ToastBody>
                 <small>
-                  {notification.message.split('\n').map((line, index) => (
-                    <div key={index}>{line}</div>
-                  ))}
+                  {notification.html
+                    ? notification.html && <div dangerouslySetInnerHTML={{ __html: notification.html }} />
+                    : notification.message
+                        .split('\n')
+                        .map((line, index) => <div key={index}>{line == '' ? '​' : line}</div>)}
                 </small>
               </ToastBody>
             </Toast>

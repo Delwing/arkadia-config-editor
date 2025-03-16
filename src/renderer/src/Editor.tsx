@@ -16,7 +16,7 @@ import Item from './editor/Item'
 import { Button, Form } from 'react-bootstrap'
 import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
 import { NotificationContext } from './NotificationCenter'
-import { Floppy } from 'react-bootstrap-icons'
+import { ExclamationOctagon, Floppy } from 'react-bootstrap-icons'
 import { createPortal } from 'react-dom'
 import { Preview } from '@renderer/Preview'
 import { NumberOfChanges } from '@renderer/editor/NumberOfChanges'
@@ -99,9 +99,16 @@ function Editor({ config }: EditorProps): JSX.Element {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const invalid = event.currentTarget.querySelector('.form-control.is-invalid')
-    if (invalid) {
-      invalid.closest('[data-schemapath]')?.scrollIntoView()
+    const invalid = Array.from(event.currentTarget.querySelectorAll('[data-schemapath].invalid-value'))
+    if (invalid.length > 0) {
+      notificationService?.current?.addNotification({
+        header: 'Nie zapisano konfiguracji',
+        icon: ExclamationOctagon,
+        message: `Konfiguracja zawiera błędy.\n\nKlucze z błędami:\n${invalid.map(el => el.getAttribute('data-schemapath')).join('\n')}`
+      })
+
+
+      invalid.values().next().value.scrollIntoView()
       return
     }
 
