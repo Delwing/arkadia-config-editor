@@ -50,13 +50,13 @@ export function ConfigContainer({ loadKey, config }: { loadKey: number; config: 
           </Alert>
         )}
         {configKeysSize > 0 && !config.hasLoadingTrigger && (
-          <Alert variant={'danger'}>
+          <Alert variant={'warning'}>
             <div  className={'d-flex align-items-center'}>
             <ExclamationCircle className={'me-2'} />
             Plik nie jest ładowany automatycznie.
             </div>
             <div className={'mt-1'}>
-            Możesz utworzyć trigger ładujący wpisując w Mudlecie <code>/cinit imie imie_wolacz</code>
+            Możesz utworzyć trigger ładujący wpisując w Mudlecie <code className={'border border-warning rounded px-1 text-light bg-dark'}>/cinit imie imie_wolacz</code>
             </div>
           </Alert>
         )}

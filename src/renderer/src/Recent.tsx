@@ -1,6 +1,6 @@
 import { JSX, useEffect, useState } from 'react'
-import { Card, Container } from 'react-bootstrap'
-import { FiletypeJson } from 'react-bootstrap-icons'
+import { Container } from 'react-bootstrap'
+import { DashboardCard } from '@renderer/DashboardCard'
 
 export const Recent = (): JSX.Element => {
   const [recent, setRecent] = useState([] as string[])
@@ -13,27 +13,10 @@ export const Recent = (): JSX.Element => {
 
   return (
     <Container fluid className={'p-4'}>
-      <h5>Ostatnio otwarte:</h5>
-      <hr />
-      <div className={'d-flex ps-4 gap-4 flex-column justify-content-start border-start ms-2'}>
+      <h5 className={'mb-3 pb-1 border-bottom'}>Ostatnio otwarte:</h5>
+      <div className={'d-flex gap-4 justify-content-start flex-wrap'}>
         {recent.map((recent) => (
-          <Card
-            style={{ width: '500px' }}
-            key={recent}
-            onClick={() => window.api.openConfig(recent)}
-            role={'button'}
-            className={'bg-transparent border-secondary-subtle'}
-          >
-            <Card.Header>
-              <FiletypeJson className={'me-1'} />
-              {recent.replace(/^.*[\\/]/, '')}
-            </Card.Header>
-            <Card.Footer>
-              <Card.Text>
-                <small>{recent}</small>
-              </Card.Text>
-            </Card.Footer>
-          </Card>
+          <DashboardCard key={recent} filePath={recent} />
         ))}
       </div>
     </Container>

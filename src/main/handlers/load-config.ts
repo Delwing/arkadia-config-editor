@@ -29,13 +29,35 @@ ipcMain.handle(
   'save',
   async (_, file: string, config: Config): Promise<void> =>
     new Promise((resolve) => {
-      fs.writeFile(file, JSON.stringify(config, null, 4), () => resolve())
+      fs.writeFile(file, JSON.stringify(config, null, 4), () => {
+        ipcMain.emit('fileSaved')
+        return resolve()
+      })
     })
 )
+
+let current: string | undefined
+
+export function clearConfig() {
+  current = undefined
+  ipcMain.emit('configStateChange', false)
+}
+
+export function isConfigOpened() {
+  return current !== undefined
+}
+
+export function reloadConfig(target: WebContents) {
+  if (!current) {
+    return
+  }
+  loadConfig(target, current)
+}
 
 export function loadConfig(target: WebContents, path: string): void {
   const loader = new ConfigLoader(path)
   loader.load().then((fields) => {
+    current = path
     target.send('config', fields)
     settings.get('app:recentDocuments').then((recent) => {
       settings.set(
@@ -46,5 +68,6 @@ export function loadConfig(target: WebContents, path: string): void {
           .slice(0, 5)
       )
     })
+    ipcMain.emit('configStateChange', true)
   })
 }

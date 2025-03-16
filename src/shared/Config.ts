@@ -4,6 +4,7 @@ export interface ConfigResponse {
   path: string
   fields: Map<string, Field>
   hasLoadingTrigger: boolean
+  isValid: boolean
 }
 
 export type FieldType = 'string' | 'boolean' | 'list' | 'map' | 'number'

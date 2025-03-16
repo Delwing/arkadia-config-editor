@@ -11,6 +11,7 @@ export function BooleanSelect({ name, value, updateCallback }: InputProperties):
       onChange={(e) => {
         return updateCallback(e.currentTarget.checked)
       }}
+      label={<code>{value?.toString()}</code>}
     />
   )
 }

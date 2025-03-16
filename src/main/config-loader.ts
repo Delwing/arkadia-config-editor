@@ -48,7 +48,8 @@ export class ConfigLoader {
         directory: this.directory,
         path: this.configPath,
         fields: fields,
-        hasLoadingTrigger: hasLoadingTrigger
+        hasLoadingTrigger: hasLoadingTrigger,
+        isValid: Array.from(fields.values()).filter((field) => field.value !== undefined && field.definition !== undefined).length > 0
       }
     })
   }

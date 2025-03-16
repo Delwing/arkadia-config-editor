@@ -4,10 +4,14 @@ import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions
 
 import fs from 'fs'
 import path from 'path'
+import SettingsService, { SETTINGS } from './settings-service'
 
 let currentTheme = settings.getSync('theme.bootstrap') ?? 'sandstone'
+let currentHljsTheme = settings.getSync('theme.hljs')
 
-export default function createMenu(mainWindow: BrowserWindow): Menu {
+const settingsService = new SettingsService()
+
+export default function createMenu(mainWindow: BrowserWindow, hasConfigOpened: boolean): Menu {
   const themes = fs
     .readdirSync(path.resolve(__dirname, '../renderer/assets'))
     .filter((file) => file.match('theme'))
@@ -26,23 +30,68 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
       })
     )
 
+  const hljsThemes = fs
+    .readdirSync(path.resolve(__dirname, '../../node_modules/highlight.js/scss/'))
+    .filter((file) => file.endsWith('.scss'))
+    .map((file) => file.substring(0, file.indexOf('.')))
+    .map(
+      (theme): MenuItemConstructorOptions => ({
+        label: theme,
+        type: 'radio',
+        click: (): void => {
+          currentHljsTheme = theme
+          mainWindow.webContents.send('theme:hljs', theme)
+          settings.set('theme.hljs', theme)
+        },
+        checked: currentHljsTheme == theme
+      })
+    )
+  hljsThemes.unshift({
+    label: 'Domyślny',
+    type: 'radio',
+    click: (): void => {
+      mainWindow.webContents.send('theme:hljs', 'none')
+      settings.set('theme.hljs', 'none')
+    },
+    checked: currentHljsTheme == 'none'
+  })
+
+  const appSettings = Object.values(SETTINGS).map(value => {
+    return {
+      label: value.label,
+      type: 'checkbox',
+      checked: settingsService.getSetting(value.key) as boolean,
+      click: (v) => {
+        settingsService.setSetting(value.key, v.checked)
+        mainWindow.webContents.send(value.key, v.checked)
+      }
+    } as MenuItemConstructorOptions
+  })
+
   const template: MenuItemConstructorOptions[] = [
     {
       label: 'Plik',
       submenu: [
         {
           label: 'Zapisz',
-          click: function (): void {
-            mainWindow.webContents.send('save')
-          },
-          accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S'
+          click: () => mainWindow.webContents.send('save'),
+          accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S',
+          enabled: hasConfigOpened
         },
         {
           label: 'Otwórz',
-          click: function (): void {
-            ipcMain.emit('open')
-          },
+          click: () => ipcMain.emit('open'),
           accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O'
+        },
+        {
+          label: 'Przeładuj plik',
+          click: () => ipcMain.emit('reloadFile'),
+          enabled: hasConfigOpened
+        },
+        {
+          label: 'Zamknij plik',
+          click: () => ipcMain.emit('closeFile'),
+          enabled: hasConfigOpened
         },
         {
           type: 'separator'
@@ -116,7 +165,12 @@ export default function createMenu(mainWindow: BrowserWindow): Menu {
             { type: 'separator' },
             ...themes
           ]
-        }
+        },
+        {
+          label: 'Schemat kolorów dla kodu',
+          submenu: [...hljsThemes]
+        },
+        ...appSettings
       ]
     },
     {

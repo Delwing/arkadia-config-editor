@@ -49,7 +49,7 @@ export const NotificationCenter = forwardRef<NotificationService, ToastContainer
             >
               <ToastHeader className={'justify-content-between'}>
                 <span>
-                  {notification.icon && React.createElement(notification.icon, { size: 25 })}
+                  {notification.icon && React.createElement(notification.icon, { size: 15, className: 'me-2' })}
                   {notification.header}
                 </span>
               </ToastHeader>

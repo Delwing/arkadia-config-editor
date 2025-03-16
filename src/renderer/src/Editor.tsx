@@ -1,5 +1,16 @@
 import * as React from 'react'
-import { createContext, createRef, FormEvent, JSX, RefObject, useContext, useEffect, useRef } from 'react'
+import {
+  createContext,
+  createRef,
+  FormEvent,
+  JSX,
+  RefObject,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import { Config, ConfigResponse, Field, Value } from '../../shared/Config'
 import Item from './editor/Item'
 import { Button, Form } from 'react-bootstrap'
@@ -7,12 +18,30 @@ import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
 import { NotificationContext } from './NotificationCenter'
 import { Floppy } from 'react-bootstrap-icons'
 import { createPortal } from 'react-dom'
+import { Preview } from '@renderer/Preview'
+import { NumberOfChanges } from '@renderer/editor/NumberOfChanges'
 
-class ValueCollector {
+export class FieldChangeEvent extends Event {
+  public key: string
+  public isChanged: boolean
+
+  constructor(key: string, isChanged: boolean) {
+    super('fieldChangeEvent')
+    this.key = key
+    this.isChanged = isChanged
+  }
+}
+
+export interface Settings {
+  visualListChange: boolean
+}
+
+export class ValueCollector extends EventTarget {
   readonly fields: Map<string, Field>
   config: Config = {}
 
   constructor(fields: Map<string, Field>) {
+    super()
     this.fields = fields
   }
 
@@ -41,24 +70,53 @@ function Editor({ config }: EditorProps): JSX.Element {
   const ref: RefObject<HTMLDivElement> = createRef()
   const notificationService = useContext(NotificationContext)
 
+  const [settings, setSettings] = useState<Settings>({
+    visualListChange: false
+  })
+
   useEffect(() => {
-    return window.api.onRequestSave(() => formRef.current?.requestSubmit())
+    return window.api.onRequestSave(() => {
+      formRef.current?.requestSubmit()
+    })
+  }, [formRef])
+
+  useLayoutEffect(() => {
+    window.api.getVisualListEdit().then((value) => {
+      setSettings(
+        Object.assign({}, settings, {
+          visualListChange: value
+        })
+      )
+    })
+    return window.api.onVisualListChange((value) => {
+      setSettings(
+        Object.assign({}, settings, {
+          visualListChange: value
+        })
+      )
+    })
   }, [])
 
-  function onSubmit(event: FormEvent<HTMLFormElement>): void {
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const invalid = event.currentTarget.querySelector('.form-control.is-invalid')
     if (invalid) {
-      invalid.parentElement?.parentElement?.scrollIntoView()
+      invalid.closest('[data-schemapath]')?.scrollIntoView()
       return
     }
 
     window.api.saveConfig(config.path, valueCollector.current.config).then(() => {
       notificationService?.current?.addNotification({
         header: 'Zapisano konfiguracje',
+        icon: Floppy,
         message: `Zapisano ${Object.keys(valueCollector.current.config).length} kluczy\n${config.path}`
       })
+      valueCollector.current.dispatchEvent(new Event('file-saved'))
     })
+  }
+
+  function openInExplorer() {
+    window.api.openInExplorer(config.path)
   }
 
   const items: JSX.Element[] = Array.from(config.fields.entries()).map(([key, field]) =>
@@ -69,6 +127,8 @@ function Editor({ config }: EditorProps): JSX.Element {
         description={field.description}
         value={field.value}
         collector={(value?: Value) => valueCollector.current.set(key, value)}
+        settings={settings}
+        eventTarget={valueCollector.current}
       />
     ) : (
       <ItemWithoutDefinition
@@ -77,6 +137,8 @@ function Editor({ config }: EditorProps): JSX.Element {
         configPath={config.path}
         value={field.value!}
         collector={(value?: Value) => valueCollector.current.set(key, value)}
+        settings={settings}
+        eventTarget={valueCollector.current}
       />
     )
   )
@@ -84,23 +146,31 @@ function Editor({ config }: EditorProps): JSX.Element {
   return (
     <ConfigContext.Provider value={config}>
       <Form ref={formRef} onSubmit={(event) => onSubmit(event)}>
-        <div ref={ref} className={'d-flex gap-2 align-items-center'}>
+        <div ref={ref}>
           <div>
-            <h3 className={'m-0'}>{config.name}</h3>
-            <p className={'m-0 small font-monospace text-muted'}>
+            <h3 className={'m-0 mb-1'}>{config.name}</h3>
+            <p className={'m-0 small font-monospace text-muted d-flex justify-content-between'}>
               <em>{config.path}</em>
+              <Button onClick={() => openInExplorer()} className={'p-0 px-2 font-light'} color={'secondary'}>
+                Otwórz lokalizację
+              </Button>
             </p>
           </div>
         </div>
         <hr className={'mt-1 mb-4'} />
         {items}
         {createPortal(
-          <Button className={'shadow'} disabled={!config} onClick={() => formRef.current?.requestSubmit()}>
-            <Floppy className={'me-1'} /> Zapisz
-          </Button>,
+          <>
+            <Button className={'shadow'} disabled={!config} onClick={() => formRef.current?.requestSubmit()}>
+              <Floppy className={'me-1'} />
+                Zapisz
+            </Button>
+          </>,
           document.body.querySelector('.control-buttons')!
         )}
+        <NumberOfChanges valueCollector={valueCollector.current} />
       </Form>
+      <Preview config={valueCollector.current.config} />
     </ConfigContext.Provider>
   )
 }

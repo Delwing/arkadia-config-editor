@@ -11,6 +11,9 @@ import { TextAreaInput } from './components/TextAreaInput'
 import keyModifiers from '../../../shared/mudlet_key_modifiers.json'
 import { KeyInput } from './components/KeyInput'
 import { PasswordInput } from './components/PasswordInput'
+import { VisualListInput } from '@renderer/editor/components/VisualListInput'
+import { Settings } from '@renderer/Editor'
+
 
 export interface InputProperties {
   name: string
@@ -20,7 +23,7 @@ export interface InputProperties {
   definition?: FieldDefinition
 }
 
-export function controller(fieldType: FieldType, contentType?: ContentType): (arg: InputProperties) => JSX.Element {
+export function controller(fieldType: FieldType, settings: Settings, contentType?: ContentType): (arg: InputProperties) => JSX.Element {
   switch (fieldType) {
     case 'boolean':
       return BooleanSelect
@@ -40,6 +43,7 @@ export function controller(fieldType: FieldType, contentType?: ContentType): (ar
           return DefaultInput
       }
     case 'list':
+      return settings.visualListChange ? VisualListInput : TextAreaInput
     case 'map':
       switch (contentType) {
         case 'key_modifiers':

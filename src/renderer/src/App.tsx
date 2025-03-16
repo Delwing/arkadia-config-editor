@@ -2,9 +2,9 @@ import { Button, Container, Nav, Navbar, Spinner } from 'react-bootstrap'
 import { createRef, JSX, RefObject, useEffect, useMemo, useState } from 'react'
 import { FiletypeJson } from 'react-bootstrap-icons'
 import { ConfigResponse } from '../../shared/Config'
-import { Recent } from './Recent'
 import { ConfigContainer } from './ConfigContainer'
 import { NotificationCenter, NotificationContext, NotificationService } from './NotificationCenter'
+import { Dash } from './Dash'
 
 //@ts-ignore correct type
 const styles: Record<string, () => Promise<{ default: string }>> = import.meta.glob('./assets/theme-*.scss', {
@@ -41,6 +41,12 @@ function App(): JSX.Element {
     window.api.openConfig()
   }
 
+  useEffect(() => {
+    return window.api.onRequestClose(() => {
+      setConfig(undefined)
+    })
+  }, [])
+
   function changeStyle(theme: string): void {
     setLoading(true)
     loadStyle(theme).then(() => setLoading(false))
@@ -68,7 +74,7 @@ function App(): JSX.Element {
   }, [])
 
   const element = useMemo(
-    () => (!config ? <Recent /> : <ConfigContainer key={key} loadKey={key} config={config} />),
+    () => (!config ? <Dash /> : <ConfigContainer key={key} loadKey={key} config={config} />),
     [key, config]
   )
 

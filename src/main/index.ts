@@ -1,12 +1,15 @@
-import { app, shell, BrowserWindow, nativeTheme, screen, Menu } from 'electron'
+import { app, shell, BrowserWindow, nativeTheme, screen, Menu, dialog, ipcMain } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import createMenu from './menu'
-import { loadConfig } from './handlers/load-config'
+import { clearConfig, isConfigOpened, loadConfig, reloadConfig } from './handlers/load-config'
 import './handlers/theme-handlers'
 import './handlers/recent-documents'
 import './handlers/pick-file'
+import './handlers/get-mudlet-profiles'
+import './handlers/open-file'
+import './handlers/settings-handlers'
 import { registerSearchHandlersForWindow } from './handlers/search'
 import settings from 'electron-settings'
 
@@ -25,9 +28,9 @@ function createWindow(): BrowserWindow {
   })
 
   if (process.platform === 'darwin') {
-    Menu.setApplicationMenu(createMenu(mainWindow))
+    Menu.setApplicationMenu(createMenu(mainWindow, isConfigOpened()))
   } else {
-    mainWindow.setMenu(createMenu(mainWindow))
+    mainWindow.setMenu(createMenu(mainWindow, isConfigOpened()))
   }
 
   mainWindow.on('ready-to-show', () => {
@@ -43,6 +46,8 @@ app.whenReady().then(() => {
   electronApp.setAppUserModelId('pl.nullpointer.arkadia-cfg-editor')
 
   nativeTheme.themeSource = (settings.getSync('themeSource') as 'system' | 'light' | 'dark') ?? 'system'
+
+  let hasPendingChanges = false
 
   const mainWindow = createWindow()
   app.on('browser-window-created', (_, window) => {
@@ -78,6 +83,88 @@ app.whenReady().then(() => {
 
   app.on('open-file', (_, path) => {
     loadConfig(mainWindow.webContents, path)
+  })
+
+  // @ts-ignore
+  ipcMain.on('configStateChange', (isConfigOpened: boolean) => {
+    if (process.platform === 'darwin') {
+      Menu.setApplicationMenu(createMenu(mainWindow, isConfigOpened))
+    } else {
+      mainWindow.setMenu(createMenu(mainWindow, isConfigOpened))
+    }
+  })
+
+  ipcMain.on('pendingChanges', (_, pendingChanges: boolean) => {
+    hasPendingChanges = pendingChanges
+  })
+
+  ipcMain.on('reloadFile', () => {
+    if (!hasPendingChanges) {
+      reloadConfig(mainWindow.webContents)
+      return
+    }
+    const choice = dialog.showMessageBoxSync(mainWindow, {
+      type: 'question',
+      buttons: ['Przeładuj', 'Anuluj'],
+      title: 'Masz niezapisane zmiany',
+      message: 'Czy na pewno chcesz przeładować plik?'
+    })
+    if (choice === 1) {
+      reloadConfig(mainWindow.webContents)
+    }
+    return
+  })
+
+  function closeFile() {
+    mainWindow.webContents.send('close')
+    clearConfig()
+    hasPendingChanges = false
+  }
+
+  ipcMain.on('closeFile', () => {
+    if (!hasPendingChanges) {
+      closeFile()
+      return
+    }
+    const choice = dialog.showMessageBoxSync(mainWindow, {
+      type: 'question',
+      buttons: ['Zapisz i zamknij', 'Zamknij', 'Anuluj'],
+      title: 'Masz niezapisane zmiany',
+      message: 'Czy na pewno chcesz zamknąć plik?'
+    })
+    if (choice === 0) {
+      ipcMain.once('fileSaved', () => {
+        closeFile()
+      })
+      mainWindow.webContents.send('save')
+    }
+    if (choice === 1) {
+      closeFile()
+    }
+    return
+  })
+
+  mainWindow.on('close', function (e) {
+    if (!hasPendingChanges) {
+      return
+    }
+    const choice = dialog.showMessageBoxSync(mainWindow, {
+      type: 'question',
+      buttons: ['Zapisz i wyjdź', 'Wyjdź', 'Anuluj'],
+      title: 'Masz niezapisane zmiany',
+      message: 'Czy na pewno chcesz wyjść?'
+    })
+    if (choice === 0) {
+      ipcMain.on('fileSaved', () => {
+        hasPendingChanges = false
+        app.quit()
+      })
+      mainWindow.webContents.send('save')
+      e.preventDefault()
+    }
+    if (choice === 2) {
+      e.preventDefault()
+    }
   })
 })
 app.on('window-all-closed', () => {

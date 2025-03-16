@@ -16,6 +16,10 @@ import Feedback from 'react-bootstrap/Feedback'
 
 const keyTable = Object.keys(keys)
 
+const manualMapping = {
+  'Backquote': 'QuoteLeft'
+}
+
 export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.Element {
   const ref: RefObject<HTMLInputElement> = createRef()
   const listenerRef: MutableRefObject<(ev: KeyboardEvent) => void> = useRef(() => {})
@@ -25,7 +29,7 @@ export function KeyInput({ name, value, updateCallback }: InputProperties): JSX.
 
   useEffect(() => {
     listenerRef.current = (e): void => {
-      const code = e.code.replace(/^(Key|Digit)/, '')
+      const code = manualMapping[e.code] ?? e.code.replace(/^(Key|Digit)/, '');
       if (keyTable.includes(code)) {
         setValidKey(true)
         setKeyGrabbed(code)

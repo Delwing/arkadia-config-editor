@@ -7,6 +7,11 @@ module.exports = {
     '@electron-toolkit/eslint-config-prettier'
   ],
   rules: {
-    'react/prop-types': 0
+    'react/prop-types': 0,
+    'prettier/prettier': {
+      'error': {
+        endOfLine: 'auto'
+      }
+    }
   }
 }

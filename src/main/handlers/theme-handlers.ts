@@ -7,3 +7,9 @@ ipcMain.handle('theme', () => {
     isDark: nativeTheme.shouldUseDarkColors
   }
 })
+
+ipcMain.handle('hljs-theme', () => {
+  return {
+    theme: settings.getSync('theme.hljs') ?? '',
+  }
+})

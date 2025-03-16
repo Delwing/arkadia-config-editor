@@ -1,11 +1,42 @@
 import { FormControl, InputGroup } from 'react-bootstrap'
 import * as React from 'react'
-import {createRef, JSX, RefObject, useEffect, useState} from 'react'
+import { createRef, JSX, RefObject, useEffect, useLayoutEffect, useState } from 'react'
 import { validator } from '../Validators'
 import { InputProperties } from '../Components'
 import { Value } from '../../../../shared/Config'
 
 import hljs from 'highlight.js'
+import { useHljsStyle } from '@renderer/hooks/useHljsStyle'
+
+function padZero(str: string, len?: number) {
+  len = len || 2
+  let zeros = new Array(len).join('0')
+  return (zeros + str).slice(-len)
+}
+
+function invertColor(hex?: string, bw?: boolean) {
+  if (!hex) {
+    return undefined
+  }
+  const hexParts = hex.substring(hex.indexOf('(') + 1, hex.indexOf(')')).split(',')
+  let r = parseInt(hexParts[0]),
+    g = parseInt(hexParts[1]),
+    b = parseInt(hexParts[2])
+  if (bw) {
+    return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? '#000000' : '#FFFFFF'
+  }
+  let R = (255 - r).toString(16)
+  let G = (255 - g).toString(16)
+  let B = (255 - b).toString(16)
+  return '#' + padZero(R) + padZero(G) + padZero(B)
+}
+
+function getLineNumberAndColumnIndex(textarea: HTMLTextAreaElement) {
+  let textLines = textarea.value.substring(0, textarea.selectionStart).split('\n')
+  let currentLineNumber = textLines.length
+  let currentColumnIndex = textLines[textLines.length - 1].length
+  return [currentLineNumber, currentColumnIndex]
+}
 
 export function TextAreaInput({ name, value, updateCallback, definition }: InputProperties): JSX.Element {
   let formattedValue = JSON.stringify(value ?? {}, null, 4)
@@ -18,6 +49,12 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
   const [textValue, setTextValue] = useState(formattedValue)
   const [validationErrors, setValidationErrors] = useState<string>()
   const codeRef: RefObject<HTMLDivElement> = createRef()
+  const textAreaRef: RefObject<HTMLTextAreaElement> = createRef()
+  const [lineNumber, setLineNumber] = useState(0)
+  const [focus, setFocus] = useState(false)
+  const [withLines, setWithLines] = useState(false)
+
+  const theme = useHljsStyle()
 
   useEffect(() => {
     if (JSON.stringify(value ?? {}).trim() !== textValue.replaceAll(/\s/g, '').trim()) {
@@ -45,6 +82,25 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
     hljs.highlightElement(codeRef.current as HTMLElement)
   }
 
+  useEffect(() => {
+    if (textAreaRef.current && codeRef.current) {
+      const bg = codeRef.current.computedStyleMap()?.get('background')?.toString()
+      if (bg) {
+        const color = invertColor(bg)
+        if (color) {
+          textAreaRef.current.style.caretColor = color
+        }
+      }
+    }
+  }, [theme])
+
+  useLayoutEffect(() => {
+    window.api.getWithLines().then((value) => {
+      setWithLines(value)
+    })
+    return window.api.onWithLinesChange((value) => setWithLines(value))
+  }, [])
+
   function isValid(value: Value, type: string | undefined): boolean {
     if (type && validator[type]) {
       const errors = validator[type](value)
@@ -58,6 +114,14 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
 
   const onChange = (value: string): void => {
     setTextValue(value)
+  }
+
+  const setPositionOfHelperLine = () => {
+    if (!textAreaRef.current) {
+      return
+    }
+    const [line] = getLineNumberAndColumnIndex(textAreaRef.current)
+    setLineNumber(line)
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
@@ -77,29 +141,41 @@ export function TextAreaInput({ name, value, updateCallback, definition }: Input
   }
 
   const numberOfLines = textValue.split('\n').length
+
   return (
-    <div className={"position-relative code-editor"}>
-       <pre className={"position-absolute code-pane"}>
-         <code className={'line-numbers'}>
-            {Array.from({length: numberOfLines}, (_, i) => (i + 1) + "\n")}
-         </code>
-         <code ref={codeRef} className={"language-json"}>
-          {textValue}
-         </code>
-      </pre>
-      <InputGroup>
-        <FormControl
-          isInvalid={validationErrors !== undefined}
-          name={name}
-          as={'textarea'}
-          rows={numberOfLines}
-          value={textValue}
-          spellCheck={false}
-          onKeyDown={onKeyDown}
-          onChange={(e) => onChange(e.currentTarget.value)}
-        />
-        <FormControl.Feedback type="invalid">{validationErrors}</FormControl.Feedback>
-      </InputGroup>
+    <div className={'mb-3'}>
+      <div className={'position-relative code-editor' + (withLines ? ' with-lines' : '')} data-hljs-theme={theme}>
+        <pre className={'position-absolute code-pane'}>
+          <code className={'line-numbers hljs'}>
+            {Array.from({ length: numberOfLines }, (_, i) => (
+              <div key={i} className={'d-flex align-items-center' + ((i + 1 == lineNumber && focus) ? ' selected-line' : '')}>
+                {i + 1}
+              </div>
+            ))}
+            <span className={'line-numbers-divider'} />
+          </code>
+          <code ref={codeRef} className={'language-json form-control'}>
+            {textValue}
+          </code>
+        </pre>
+        <InputGroup>
+          <FormControl
+            ref={textAreaRef}
+            isInvalid={validationErrors !== undefined}
+            name={name}
+            as={'textarea'}
+            rows={numberOfLines}
+            value={textValue}
+            spellCheck={false}
+            onKeyDown={onKeyDown}
+            onSelect={setPositionOfHelperLine}
+            onBlur={() => setFocus(false)}
+            onFocus={() => setFocus(true)}
+            onChange={(e) => onChange(e.currentTarget.value)}
+          />
+        </InputGroup>
+      </div>
+      <div className={'invalid-feedback d-block ms-1'}>{validationErrors}</div>
     </div>
   )
 }
