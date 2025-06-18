@@ -4,7 +4,7 @@ import { Badge, FormGroup, FormLabel, Row, Stack } from 'react-bootstrap'
 import { FieldType, Value } from '../../../shared/Config'
 import { controller } from './Components'
 import { ArrowCounterclockwise, Trash } from 'react-bootstrap-icons'
-import { FieldChangeEvent, Settings } from '@renderer/Editor'
+import { FieldChangeEvent, Settings } from '../Editor'
 
 function mapTypes(value: Value): FieldType {
   switch (typeof value) {

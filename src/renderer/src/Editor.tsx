@@ -18,8 +18,8 @@ import ItemWithoutDefinition from './editor/ItemWithoutDefinition'
 import { NotificationContext } from './NotificationCenter'
 import { ExclamationOctagon, Floppy } from 'react-bootstrap-icons'
 import { createPortal } from 'react-dom'
-import { Preview } from '@renderer/Preview'
-import { NumberOfChanges } from '@renderer/editor/NumberOfChanges'
+import { Preview } from './Preview'
+import { NumberOfChanges } from './editor/NumberOfChanges'
 
 export class FieldChangeEvent extends Event {
   public key: string

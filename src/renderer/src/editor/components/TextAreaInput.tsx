@@ -4,7 +4,7 @@ import { createRef, JSX, RefObject, useEffect, useLayoutEffect, useState } from 
 import { InputProperties } from '../Components'
 
 import hljs from 'highlight.js'
-import { useHljsStyle } from '@renderer/hooks/useHljsStyle'
+import { useHljsStyle } from '../../hooks/useHljsStyle'
 
 function padZero(str: string, len?: number) {
   len = len || 2
@@ -37,13 +37,8 @@ function getLineNumberAndColumnIndex(textarea: HTMLTextAreaElement) {
 }
 
 export function TextAreaInput({ name, value, updateCallback, definition, setValidationErrors = () => {} }: InputProperties): JSX.Element {
-  let formattedValue = JSON.stringify(value ?? {}, null, 4)
-  if (formattedValue === '[]' && definition?.field_type === 'map') {
-    formattedValue = '{}'
-  }
-  if (formattedValue === '{}' && definition?.field_type === 'list') {
-    formattedValue = '[]'
-  }
+  const emptyValue = definition?.field_type === 'list' ? [] : {}
+  let formattedValue = JSON.stringify(value ?? emptyValue, null, 4)
   const [textValue, setTextValue] = useState(formattedValue)
   const codeRef: RefObject<HTMLDivElement> = createRef()
   const textAreaRef: RefObject<HTMLTextAreaElement> = createRef()
@@ -54,8 +49,8 @@ export function TextAreaInput({ name, value, updateCallback, definition, setVali
   const theme = useHljsStyle()
 
   useEffect(() => {
-    if (JSON.stringify(value ?? {}).trim() !== textValue.replaceAll(/\s/g, '').trim()) {
-      setTextValue(JSON.stringify(value ?? {}, null, 4))
+   if (JSON.stringify(value ?? emptyValue).trim() !== textValue.replaceAll(/\s/g, '').trim()) {
+      setTextValue(JSON.stringify(value ?? emptyValue, null, 4))
     }
   }, [value])
 

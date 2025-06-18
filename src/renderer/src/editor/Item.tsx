@@ -9,8 +9,8 @@ import { ConfigContext, FieldChangeEvent, Settings } from '../Editor'
 import { controller } from './Components'
 import { DefaultValue } from './DefaultValue'
 import { ArrowCounterclockwise } from 'react-bootstrap-icons'
-import { useHljsStyle } from '@renderer/hooks/useHljsStyle'
-import { validator } from '@renderer/editor/Validators'
+import { useHljsStyle } from '../hooks/useHljsStyle'
+import { validator } from '../editor/Validators'
 
 const converter = new showdown.Converter({
   omitExtraWLInCodeBlocks: false
@@ -39,6 +39,14 @@ export default function Item({
   const [validationErrors, setValidationErrors] = useState<string>()
   const theme = useHljsStyle()
 
+  if (definition.field_type == 'map' && JSON.stringify(value) === "[]") {
+    value = new Map();
+  }
+
+  if (definition.field_type == 'list' && JSON.stringify(value) === "{}") {
+    value = [];
+  }
+
   useEffect(() => {
     collector(value)
   }, [])
@@ -47,10 +55,7 @@ export default function Item({
     descriptionRef.current?.querySelectorAll('pre').forEach((el) => {
       if (el instanceof HTMLElement) {
         el.setAttribute('data-hljs-theme', theme ?? '')
-        const code = el.querySelector('code')
-        if (code) {
-          hljs.highlightElement(code)
-        }
+        el.querySelectorAll('code').forEach(code => hljs.highlightElement(code))
       }
     })
   }, [theme])
@@ -74,7 +79,7 @@ export default function Item({
   useEffect(() => {
     descriptionRef?.current?.querySelectorAll('ul code').forEach((el) => {
       if (
-        el.innerHTML == currentValue.toString() ||
+        el.innerHTML == currentValue?.toString() ||
         (Array.isArray(currentValue) && (currentValue as string[]).indexOf(el.innerHTML) > -1)
       ) {
         el.classList.add('text-decoration-dotted')

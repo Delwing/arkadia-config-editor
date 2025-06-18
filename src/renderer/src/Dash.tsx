@@ -1,6 +1,6 @@
-import { Recent } from '@renderer/Recent'
-import { Profiles } from '@renderer/Profiles'
-import { ReleaseNotes } from '@renderer/ReleaseNotes'
+import { Recent } from './Recent'
+import { Profiles } from './Profiles'
+import { ReleaseNotes } from './ReleaseNotes'
 
 export const Dash = () => {
   return (

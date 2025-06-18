@@ -1,6 +1,6 @@
 import { Container, Spinner } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
-import { DashboardCard } from '@renderer/DashboardCard'
+import { DashboardCard } from './DashboardCard'
 import { JSX } from 'react/jsx-runtime'
 
 export const Profiles = () => {

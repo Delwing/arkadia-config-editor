@@ -21,7 +21,7 @@ export const ReleaseNotes = (): JSX.Element => {
   return (
     <Container fluid className={'p-4'}>
       <h5>Ostatnie zmiany:</h5>
-      <div className={'overflow-y-scroll h-max'}>
+      <div className={'h-max'}>
         {releases.slice(0, 3).map((release) => (
           <Release key={release.tag_name} release={release} />
         ))}

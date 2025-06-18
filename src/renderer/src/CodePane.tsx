@@ -1,4 +1,4 @@
-import { useHljsStyle } from '@renderer/hooks/useHljsStyle'
+import { useHljsStyle } from './hooks/useHljsStyle'
 import { createRef, RefObject, useEffect } from 'react'
 
 import hljs from 'highlight.js'

@@ -11,8 +11,8 @@ import { TextAreaInput } from './components/TextAreaInput'
 import keyModifiers from '../../../shared/mudlet_key_modifiers.json'
 import { KeyInput } from './components/KeyInput'
 import { PasswordInput } from './components/PasswordInput'
-import { VisualListInput } from '@renderer/editor/components/VisualListInput'
-import { Settings } from '@renderer/Editor'
+import { VisualListInput } from './components/VisualListInput'
+import { Settings } from '../Editor'
 
 
 export interface InputProperties {
@@ -21,7 +21,7 @@ export interface InputProperties {
   configPath: string
   updateCallback: (value: Value) => void
   definition?: FieldDefinition
-  setValidationErrors?: (error: string) => void
+  setValidationErrors?: (error?: string) => void
 }
 
 export function controller(fieldType: FieldType, settings: Settings, contentType?: ContentType): (arg: InputProperties) => JSX.Element {

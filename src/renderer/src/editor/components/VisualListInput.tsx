@@ -19,6 +19,9 @@ export function VisualListInput({ value, updateCallback, definition }: InputProp
   const type = isNaN(definition?.default_value[0]) ? 'string' : 'number'
 
   const createSortables = (): Sortable[] => {
+    if (!Array.isArray(value)) {
+      return []
+    }
     return (value as string[]).map((value) => {
       return { id: crypto.randomUUID(), value: value }
     })

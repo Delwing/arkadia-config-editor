@@ -3,7 +3,8 @@ import Index from './Index'
 import Editor from './Editor'
 import { createRef, JSX, RefObject, useEffect, useMemo, useState } from 'react'
 import { ConfigResponse } from '../../shared/Config'
-import { ChevronDoubleUp, ExclamationCircle } from 'react-bootstrap-icons'
+import { ChevronDoubleUp, Copy, ExclamationCircle } from 'react-bootstrap-icons'
+import { NotConfigAlert } from './NotConfigAlert'
 
 let timeout: string | number | NodeJS.Timeout | undefined
 
@@ -43,12 +44,8 @@ export function ConfigContainer({ loadKey, config }: { loadKey: number; config: 
   return (
     <Container fluid={true} className={'d-flex config-container g-0 gap-1'}>
       <div className={'index p-4'}>{index}</div>
-      <div ref={ref} className={'config p-4 border-start border-secondary-subtle shadow-sm'}>
-        {configKeysSize == 0 && (
-          <Alert variant={'danger'} className={'d-flex align-items-center'}>
-            <ExclamationCircle className={'me-2'} /> Wydaje się, że załadowany plik nie jest plikiem konfiguracjnym.
-          </Alert>
-        )}
+      <div ref={ref} className={'config p-4 border-start border-secondary-subtle shadow-sm position-relative'}>
+        {configKeysSize == 0 && <NotConfigAlert />}
         {configKeysSize > 0 && !config.hasLoadingTrigger && (
           <Alert variant={'warning'}>
             <div  className={'d-flex align-items-center'}>
@@ -56,7 +53,9 @@ export function ConfigContainer({ loadKey, config }: { loadKey: number; config: 
             Plik nie jest ładowany automatycznie.
             </div>
             <div className={'mt-1'}>
-            Możesz utworzyć trigger ładujący wpisując w Mudlecie <code className={'border border-warning rounded px-1 text-light bg-dark'}>/cinit imie imie_wolacz</code>
+            Możesz utworzyć trigger ładujący wpisując w Mudlecie
+                <code className={'border border-warning rounded px-1 mx-2 text-light bg-dark'}>/cinit imie imie_wolacz</code>
+                {(config.fields.get('amap.locating.name')?.value !== undefined && config.fields.get('amap.locating.name')!.value!.toString().length > 0) && <Copy role={'button'} onClick={() => navigator.clipboard.writeText(`/cinit ${config.name} ${config.fields.get('amap.locating.name')?.value}`)} />}
             </div>
           </Alert>
         )}

@@ -1,6 +1,6 @@
 import { JSX, useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap'
-import { DashboardCard } from '@renderer/DashboardCard'
+import { DashboardCard } from './DashboardCard'
 
 export const Recent = (): JSX.Element => {
   const [recent, setRecent] = useState([] as string[])

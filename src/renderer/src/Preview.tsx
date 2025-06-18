@@ -4,7 +4,7 @@ import { Config } from '../../shared/Config'
 import { createPortal } from 'react-dom'
 import { Code } from 'react-bootstrap-icons'
 
-import { CodePane } from '@renderer/CodePane'
+import { CodePane } from './CodePane'
 
 export const Preview = ({ config }: { config: Config }) => {
   const [show, setShow] = useState(false)
