@@ -38,8 +38,8 @@ html, body, #root {
   width: 25%;
 }
 
-.index ul {
-  overflow-y: scroll;
+.index > ul {
+  overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
 }
