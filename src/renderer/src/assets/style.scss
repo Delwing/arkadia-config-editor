@@ -57,6 +57,11 @@ html, body, #root {
   margin: 0;
   font-size: 0.85em;
 }
+.keys-index ul {
+  list-style-type: none;
+  padding-left: 1rem;
+  margin: 0;
+}
 
 textarea {
   overflow: hidden;
