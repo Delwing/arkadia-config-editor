@@ -38,8 +38,8 @@ html, body, #root {
   width: 25%;
 }
 
-.index ul {
-  overflow-y: scroll;
+.index > ul {
+  overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
 }
@@ -56,6 +56,11 @@ html, body, #root {
   padding-left: 5px;
   margin: 0;
   font-size: 0.85em;
+}
+.keys-index ul {
+  list-style-type: none;
+  padding-left: 1rem;
+  margin: 0;
 }
 
 textarea {
