@@ -7,13 +7,13 @@ import { FileInput } from './components/FileInput'
 import { DefaultInput } from './components/DefaultInput'
 import { CheckBoxInput } from './components/CheckBoxInput'
 import { TextAreaInput } from './components/TextAreaInput'
+import { HexColorInput } from './components/HexColorInput'
 
 import keyModifiers from '../../../shared/mudlet_key_modifiers.json'
 import { KeyInput } from './components/KeyInput'
 import { PasswordInput } from './components/PasswordInput'
 import { VisualListInput } from './components/VisualListInput'
 import { Settings } from '../Editor'
-
 
 export interface InputProperties {
   name: string
@@ -24,7 +24,11 @@ export interface InputProperties {
   setValidationErrors?: (error?: string) => void
 }
 
-export function controller(fieldType: FieldType, settings: Settings, contentType?: ContentType): (arg: InputProperties) => JSX.Element {
+export function controller(
+  fieldType: FieldType,
+  settings: Settings,
+  contentType?: ContentType
+): (arg: InputProperties) => JSX.Element {
   switch (fieldType) {
     case 'boolean':
       return BooleanSelect
@@ -34,6 +38,8 @@ export function controller(fieldType: FieldType, settings: Settings, contentType
       switch (contentType) {
         case 'mudlet_color':
           return ColorSelect
+        case 'hex_color':
+          return HexColorInput
         case 'file_path':
           return FileInput
         case 'keybind':
