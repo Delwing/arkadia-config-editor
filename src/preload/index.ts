@@ -21,12 +21,14 @@ export interface CfgApi {
 
   onVisualListChange(callback: (value: boolean) => void): () => void
   onWithLinesChange(callback: (value: boolean) => void): () => void
+  onGroupKeysChange(callback: (value: boolean) => void): () => void
 
   getTheme(): Promise<{ theme: string; isDark: boolean }>
   getHljsTheme(): Promise<{ theme: string }>
 
   getVisualListEdit(): Promise<{ settings: boolean }>
   getWithLines(): Promise<boolean>
+  getGroupKeys(): Promise<boolean>
 
   getRecent(): Promise<string[]>
 
@@ -91,6 +93,8 @@ const api: CfgApi = {
   getVisualListEdit: () => ipcRenderer.invoke('setting', SETTINGS.VISUAL_EDITOR.key),
   onWithLinesChange: (callback) => wrap(SETTINGS.LINE_NUMBERS.key, callback),
   getWithLines: () => ipcRenderer.invoke('setting', SETTINGS.LINE_NUMBERS.key),
+  onGroupKeysChange: (callback) => wrap(SETTINGS.GROUP_KEYS.key, callback),
+  getGroupKeys: () => ipcRenderer.invoke('setting', SETTINGS.GROUP_KEYS.key),
   getTheme: () => ipcRenderer.invoke('theme'),
   getHljsTheme: () => ipcRenderer.invoke('hljs-theme'),
   getRecent: () => ipcRenderer.invoke('app:recentDocuments'),
