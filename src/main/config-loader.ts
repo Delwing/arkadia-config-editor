@@ -78,10 +78,14 @@ export class ConfigLoader {
   }
 
   private readPluginsSchemas(): Promise<MudletSchema>[] {
+    const pluginsDir = `${this.directory}/plugins`
+    if (!fs.existsSync(pluginsDir)) {
+      return []
+    }
     return fs
-      .readdirSync(`${this.directory}/plugins`, { withFileTypes: true })
+      .readdirSync(pluginsDir, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => `${this.directory}/plugins/${dirent.name}/config_schema.json`)
+      .map((dirent) => `${pluginsDir}/${dirent.name}/config_schema.json`)
       .filter(fs.existsSync)
       .map(
         (configPath) =>
@@ -115,10 +119,14 @@ export class ConfigLoader {
   }
 
   private readPluginsReadme(): Promise<string>[] {
+    const pluginsDir = `${this.directory}/plugins`
+    if (!fs.existsSync(pluginsDir)) {
+      return []
+    }
     return fs
-      .readdirSync(`${this.directory}/plugins`, { withFileTypes: true })
+      .readdirSync(pluginsDir, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => `${this.directory}/plugins/${dirent.name}/config.md`)
+      .map((dirent) => `${pluginsDir}/${dirent.name}/config.md`)
       .filter(fs.existsSync)
       .map((configPath) => new Promise((resolve) => resolve(fs.readFileSync(configPath, 'utf-8'))))
   }
@@ -182,8 +190,12 @@ export class ConfigLoader {
   }
 
   private async checkLoadingTrigger(): Promise<boolean> {
+    const mudletConfigDir = path.join(this.directory, mudletConfigPathSuffix)
+    if (!fs.existsSync(mudletConfigDir)) {
+      return false
+    }
     const configs = fs
-      .readdirSync(path.join(this.directory, mudletConfigPathSuffix), { withFileTypes: true })
+      .readdirSync(mudletConfigDir, { withFileTypes: true })
       .filter((file) => file.isFile())
       .map((file) => path.resolve(file.path, file.name))
       .map((name) => ({ name, ctime: fs.statSync(name).ctime }))
